@@ -275,7 +275,7 @@ internal fun showToast(context: Context, message: String) {
 private fun AdListContentPreview() {
     AdBoardAppTheme {
         AdListContent(
-            uiState = ListUiState(ads = sampleAds),
+            uiState = ListUiState(ads = previewAds),
             onQueryChange = {},
             onAdClick = {},
             onAddClick = {},

@@ -30,11 +30,8 @@ fun AdBoardNavHost(
         composable(
             route = "$DETAILS_ROUTE/{itemId}",
             arguments = listOf(navArgument("itemId") { type = NavType.IntType })
-        ) { entry ->
-            val itemId = entry.arguments?.getInt("itemId")
-            val ad = sampleAds.firstOrNull { it.id == itemId }
+        ) {
             DetailScreen(
-                ad = ad,
                 onBack = { navController.popBackStack() }
             )
         }
