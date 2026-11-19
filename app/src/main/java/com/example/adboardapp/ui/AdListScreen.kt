@@ -62,7 +62,8 @@ fun AdListScreen(
         onQueryChange = viewModel::onQueryChange,
         onAdClick = { ad -> onAdClick(ad.id) },
         onAddClick = { showToast(context, "Створити нове оголошення") },
-        onPublishClick = { ad -> showToast(context, "Оголошення «${ad.title}» опубліковано") }
+        onPublishClick = { ad -> showToast(context, "Оголошення «${ad.title}» опубліковано") },
+        onRetry = viewModel::reload
     )
 }
 
@@ -75,6 +76,7 @@ fun AdListContent(
     onAdClick: (Ad) -> Unit,
     onAddClick: () -> Unit,
     onPublishClick: (Ad) -> Unit,
+    onRetry: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Scaffold(
@@ -137,6 +139,25 @@ fun AdListContent(
                         contentAlignment = Alignment.Center
                     ) {
                         CircularProgressIndicator()
+                    }
+
+                    uiState.errorMessage != null -> Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(1f),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            Text(
+                                text = uiState.errorMessage,
+                                color = MaterialTheme.colorScheme.error,
+                                modifier = Modifier.padding(horizontal = 24.dp)
+                            )
+                            Spacer(Modifier.height(12.dp))
+                            Button(onClick = onRetry) {
+                                Text("Спробувати ще раз")
+                            }
+                        }
                     }
 
                     uiState.visibleAds.isEmpty() -> Box(
@@ -279,7 +300,8 @@ private fun AdListContentPreview() {
             onQueryChange = {},
             onAdClick = {},
             onAddClick = {},
-            onPublishClick = {}
+            onPublishClick = {},
+            onRetry = {}
         )
     }
 }

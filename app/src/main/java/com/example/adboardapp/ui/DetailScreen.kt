@@ -44,7 +44,11 @@ fun DetailScreen(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-    DetailContent(uiState = uiState, onBack = onBack)
+    DetailContent(
+        uiState = uiState,
+        onBack = onBack,
+        onRetry = viewModel::reload
+    )
 }
 
 // Renders the details screen from a ready UiState
@@ -53,6 +57,7 @@ fun DetailScreen(
 fun DetailContent(
     uiState: DetailUiState,
     onBack: () -> Unit,
+    onRetry: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Scaffold(
@@ -77,6 +82,25 @@ fun DetailContent(
                 contentAlignment = Alignment.Center
             ) {
                 CircularProgressIndicator()
+            }
+
+            uiState.errorMessage != null -> Box(
+                modifier = Modifier
+                    .padding(innerPadding)
+                    .fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Text(
+                        text = uiState.errorMessage,
+                        color = MaterialTheme.colorScheme.error,
+                        modifier = Modifier.padding(horizontal = 24.dp)
+                    )
+                    Spacer(Modifier.height(12.dp))
+                    Button(onClick = onRetry) {
+                        Text("Спробувати ще раз")
+                    }
+                }
             }
 
             ad == null -> Box(
@@ -202,7 +226,8 @@ private fun DetailContentPreview() {
     AdBoardAppTheme {
         DetailContent(
             uiState = DetailUiState(ad = previewAds.first(), isLoading = false),
-            onBack = {}
+            onBack = {},
+            onRetry = {}
         )
     }
 }

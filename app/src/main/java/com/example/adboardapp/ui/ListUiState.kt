@@ -6,7 +6,8 @@ import com.example.adboardapp.model.Ad
 data class ListUiState(
     val ads: List<Ad> = emptyList(),
     val query: String = "",
-    val isLoading: Boolean = false
+    val isLoading: Boolean = false,
+    val errorMessage: String? = null
 ) {
     // Filtered list is derived from ads and query, no need to keep it in state
     val visibleAds: List<Ad>
