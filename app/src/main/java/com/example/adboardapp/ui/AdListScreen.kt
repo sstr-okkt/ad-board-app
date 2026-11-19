@@ -22,6 +22,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.MaterialTheme
@@ -34,9 +35,6 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -44,129 +42,52 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.adboardapp.model.Ad
 import com.example.adboardapp.model.AdStatus
-import com.example.adboardapp.model.Author
 import com.example.adboardapp.ui.theme.AdBoardAppTheme
 
-// Test data for now, no database or network yet
-private val sampleAds = listOf(
-    Ad(
-        id = 1,
-        title = "iPhone 13 128GB",
-        price = 15_000.0,
-        category = "Техніка",
-        city = "Одеса",
-        views = 540,
-        status = AdStatus.PUBLISHED,
-        author = Author(11, "Ігор Мельник", 4.9, "+380671234567"),
-        publishedAt = "2026-11-12"
-    ),
-    Ad(
-        id = 2,
-        title = "Крісло офісне",
-        price = 2_300.0,
-        category = "Меблі",
-        city = "Одеса",
-        views = 96,
-        status = AdStatus.PUBLISHED,
-        author = Author(12, "Алла Дмитрук", 4.3, null),
-        publishedAt = "2026-11-10"
-    ),
-    Ad(
-        id = 3,
-        title = "Пальто жіноче",
-        price = 1_450.0,
-        category = "Одяг",
-        city = "Львів",
-        views = 64,
-        status = AdStatus.PUBLISHED,
-        author = Author(13, "Софія Гнатюк", 4.8, "+380931112244"),
-        publishedAt = "2026-11-09"
-    ),
-    Ad(
-        id = 4,
-        title = "Монітор Dell 24\"",
-        price = 4_900.0,
-        category = "Техніка",
-        city = "Київ",
-        views = 312,
-        status = AdStatus.PUBLISHED,
-        author = Author(14, "Роман Олійник", 4.5, "+380502223355"),
-        publishedAt = "2026-11-11"
-    ),
-    Ad(
-        id = 5,
-        title = "Шафа для одягу",
-        price = 3_800.0,
-        category = "Меблі",
-        city = "Дніпро",
-        views = 41,
-        status = AdStatus.ARCHIVED,
-        author = Author(15, "Ірина Савчук", 4.1, "+380673334466"),
-        publishedAt = "2026-10-30"
-    ),
-    Ad(
-        id = 6,
-        title = "Настільна лампа",
-        price = 650.0,
-        category = "Побутова техніка",
-        city = "Одеса",
-        views = 128,
-        status = AdStatus.PUBLISHED,
-        author = Author(16, "Дмитро Литвин", 4.6, "+380934445577"),
-        publishedAt = "2026-11-08"
-    ),
-    Ad(
-        id = 7,
-        title = "Кросівки Nike 42",
-        price = 2_100.0,
-        category = "Спорт",
-        city = "Харків",
-        views = 187,
-        status = AdStatus.PUBLISHED,
-        author = Author(17, "Юлія Романюк", 4.7, "+380675556688"),
-        publishedAt = "2026-11-13"
-    ),
-    Ad(
-        id = 8,
-        title = "Енциклопедія, 3 томи",
-        price = 1_200.0,
-        category = "Книги",
-        city = "Київ",
-        views = 22,
-        status = AdStatus.DRAFT,
-        author = Author(18, "Олег Мазур", 4.2, "+380936667799"),
-        publishedAt = null
-    )
-)
+// Connects the ViewModel with the stateless screen content
+@Composable
+fun AdListScreen(viewModel: ListViewModel = viewModel()) {
+    val context = LocalContext.current
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-// First screen: search field plus scrollable list of ads
+    AdListContent(
+        uiState = uiState,
+        onQueryChange = viewModel::onQueryChange,
+        onAdClick = { ad -> showToast(context, "Відкрито: ${ad.title}") },
+        onAddClick = { showToast(context, "Створити нове оголошення") },
+        onPublishClick = { ad -> showToast(context, "Оголошення «${ad.title}» опубліковано") }
+    )
+}
+
+// Renders the screen from a ready UiState, no ViewModel here
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AdListScreen(modifier: Modifier = Modifier) {
-    val context = LocalContext.current
-    // Query lives here so the list filters while typing
-    var query by rememberSaveable { mutableStateOf("") }
-
-    val filtered = sampleAds.filter { ad ->
-        ad.title.contains(query.trim(), ignoreCase = true)
-    }
-
+fun AdListContent(
+    uiState: ListUiState,
+    onQueryChange: (String) -> Unit,
+    onAdClick: (Ad) -> Unit,
+    onAddClick: () -> Unit,
+    onPublishClick: (Ad) -> Unit,
+    modifier: Modifier = Modifier
+) {
     Scaffold(
         modifier = modifier.fillMaxSize(),
         topBar = {
             TopAppBar(
                 title = { Text("Дошка оголошень") },
                 actions = {
-                    TextButton(onClick = { showToast(context, "Створити нове оголошення") }) {
+                    TextButton(onClick = onAddClick) {
                         Text("Додати")
                     }
                 }
             )
         },
         floatingActionButton = {
-            FloatingActionButton(onClick = { showToast(context, "Створити нове оголошення") }) {
+            FloatingActionButton(onClick = onAddClick) {
                 Text("+", style = MaterialTheme.typography.headlineMedium)
             }
         }
@@ -184,8 +105,8 @@ fun AdListScreen(modifier: Modifier = Modifier) {
                     .fillMaxHeight()
             ) {
                 OutlinedTextField(
-                    value = query,
-                    onValueChange = { query = it },
+                    value = uiState.query,
+                    onValueChange = onQueryChange,
                     label = { Text("Пошук за назвою") },
                     placeholder = { Text("Наприклад, ноутбук") },
                     singleLine = true,
@@ -194,17 +115,28 @@ fun AdListScreen(modifier: Modifier = Modifier) {
                         .padding(horizontal = 16.dp, vertical = 8.dp)
                 )
 
-                Text(
-                    text = "Знайдено ${filtered.size} з ${sampleAds.size}",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.padding(horizontal = 16.dp)
-                )
+                if (!uiState.isLoading) {
+                    Text(
+                        text = "Знайдено ${uiState.visibleAds.size} з ${uiState.ads.size}",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.padding(horizontal = 16.dp)
+                    )
 
-                Spacer(Modifier.height(8.dp))
+                    Spacer(Modifier.height(8.dp))
+                }
 
-                if (filtered.isEmpty()) {
-                    Box(
+                when {
+                    uiState.isLoading -> Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(1f),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CircularProgressIndicator()
+                    }
+
+                    uiState.visibleAds.isEmpty() -> Box(
                         modifier = Modifier
                             .fillMaxWidth()
                             .weight(1f),
@@ -215,17 +147,17 @@ fun AdListScreen(modifier: Modifier = Modifier) {
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
-                } else {
-                    LazyColumn(
+
+                    else -> LazyColumn(
                         modifier = Modifier.weight(1f),
                         contentPadding = PaddingValues(16.dp),
                         verticalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
-                        items(items = filtered, key = { it.id }) { ad ->
+                        items(items = uiState.visibleAds, key = { it.id }) { ad ->
                             AdCard(
                                 ad = ad,
-                                onClick = { showToast(context, "Відкрито: ${ad.title}") },
-                                onPublish = { showToast(context, "Оголошення «${ad.title}» опубліковано") }
+                                onClick = { onAdClick(ad) },
+                                onPublish = { onPublishClick(ad) }
                             )
                         }
                     }
@@ -337,8 +269,14 @@ private fun showToast(context: Context, message: String) {
 
 @Preview(showBackground = true)
 @Composable
-private fun AdListScreenPreview() {
+private fun AdListContentPreview() {
     AdBoardAppTheme {
-        AdListScreen()
+        AdListContent(
+            uiState = ListUiState(ads = sampleAds),
+            onQueryChange = {},
+            onAdClick = {},
+            onAddClick = {},
+            onPublishClick = {}
+        )
     }
 }
