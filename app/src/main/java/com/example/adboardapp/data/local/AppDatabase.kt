@@ -1,0 +1,10 @@
+package com.example.adboardapp.data.local
+
+import androidx.room.Database
+import androidx.room.RoomDatabase
+
+// Local database of the app
+@Database(entities = [AdEntity::class], version = 1, exportSchema = false)
+abstract class AppDatabase : RoomDatabase() {
+    abstract fun adDao(): AdDao
+}

@@ -63,7 +63,7 @@ fun AdListScreen(
         onAdClick = { ad -> onAdClick(ad.id) },
         onAddClick = { showToast(context, "Створити нове оголошення") },
         onPublishClick = { ad -> showToast(context, "Оголошення «${ad.title}» опубліковано") },
-        onRetry = viewModel::reload
+        onRetry = viewModel::refresh
     )
 }
 
@@ -120,6 +120,30 @@ fun AdListContent(
                         .padding(horizontal = 16.dp, vertical = 8.dp)
                 )
 
+                if (uiState.syncError) {
+                    Surface(
+                        color = MaterialTheme.colorScheme.errorContainer,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp, vertical = 4.dp)
+                    ) {
+                        Row(
+                            modifier = Modifier.padding(start = 12.dp, end = 4.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = "Немає з'єднання. Показано збережені дані",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onErrorContainer,
+                                modifier = Modifier.weight(1f)
+                            )
+                            TextButton(onClick = onRetry) {
+                                Text("Повторити")
+                            }
+                        }
+                    }
+                }
+
                 if (!uiState.isLoading) {
                     Text(
                         text = "Знайдено ${uiState.visibleAds.size} з ${uiState.ads.size}",
@@ -139,25 +163,6 @@ fun AdListContent(
                         contentAlignment = Alignment.Center
                     ) {
                         CircularProgressIndicator()
-                    }
-
-                    uiState.errorMessage != null -> Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .weight(1f),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                            Text(
-                                text = uiState.errorMessage,
-                                color = MaterialTheme.colorScheme.error,
-                                modifier = Modifier.padding(horizontal = 24.dp)
-                            )
-                            Spacer(Modifier.height(12.dp))
-                            Button(onClick = onRetry) {
-                                Text("Спробувати ще раз")
-                            }
-                        }
                     }
 
                     uiState.visibleAds.isEmpty() -> Box(
@@ -296,7 +301,7 @@ internal fun showToast(context: Context, message: String) {
 private fun AdListContentPreview() {
     AdBoardAppTheme {
         AdListContent(
-            uiState = ListUiState(ads = previewAds),
+            uiState = ListUiState(ads = previewAds, isLoading = false),
             onQueryChange = {},
             onAdClick = {},
             onAddClick = {},

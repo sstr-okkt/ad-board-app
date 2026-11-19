@@ -1,30 +1,46 @@
 package com.example.adboardapp.data.mapper
 
+import com.example.adboardapp.data.local.AdEntity
 import com.example.adboardapp.data.remote.ProductDto
 import com.example.adboardapp.model.Ad
 import com.example.adboardapp.model.AdStatus
 import com.example.adboardapp.model.Author
 
-// Converts an API product into the domain ad
-fun ProductDto.toAd(): Ad {
+// Converts an API product into a Room entity
+fun ProductDto.toEntity(): AdEntity {
     val reviewer = reviews.firstOrNull()
-    return Ad(
+    return AdEntity(
         id = id,
         title = title,
         price = price * 41, // rough USD to UAH for the demo
         category = categoryLabel(category),
         city = "Онлайн",
         views = stock,
-        status = AdStatus.PUBLISHED,
-        author = Author(
-            id = id,
-            name = reviewer?.reviewerName ?: brand ?: "Продавець",
-            rating = reviewer?.rating ?: 0.0,
-            contact = null
-        ),
+        status = AdStatus.PUBLISHED.name,
+        authorName = reviewer?.reviewerName ?: brand ?: "Продавець",
+        authorRating = reviewer?.rating ?: 0.0,
+        authorContact = null,
         publishedAt = meta?.createdAt?.take(10)
     )
 }
+
+// Converts a Room entity into the domain model
+fun AdEntity.toDomain(): Ad = Ad(
+    id = id,
+    title = title,
+    price = price,
+    category = category,
+    city = city,
+    views = views,
+    status = runCatching { AdStatus.valueOf(status) }.getOrDefault(AdStatus.PUBLISHED),
+    author = Author(
+        id = id,
+        name = authorName,
+        rating = authorRating,
+        contact = authorContact
+    ),
+    publishedAt = publishedAt
+)
 
 // Turns API category names into readable labels
 private fun categoryLabel(raw: String): String = when (raw) {

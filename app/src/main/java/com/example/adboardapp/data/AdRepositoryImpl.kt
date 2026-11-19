@@ -1,26 +1,38 @@
 package com.example.adboardapp.data
 
-import com.example.adboardapp.data.mapper.toAd
-import com.example.adboardapp.data.remote.NetworkModule
+import com.example.adboardapp.data.local.AdDao
+import com.example.adboardapp.data.mapper.toDomain
+import com.example.adboardapp.data.mapper.toEntity
 import com.example.adboardapp.data.remote.ProductsApi
 import com.example.adboardapp.domain.AdRepository
 import com.example.adboardapp.model.Ad
 import com.example.adboardapp.model.Result
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 
-// Remote implementation, data comes from a REST API
+// Offline-first repository: Room is the source of truth, the network only refreshes it
 class AdRepositoryImpl(
-    private val api: ProductsApi = NetworkModule.productsApi
+    private val api: ProductsApi,
+    private val dao: AdDao
 ) : AdRepository {
 
-    override suspend fun getAds(): Result<List<Ad>> = try {
-        Result.Success(api.getProducts().products.map { it.toAd() })
+    override fun observeAds(): Flow<List<Ad>> =
+        dao.getAll().map { entities -> entities.map { it.toDomain() } }
+
+    override suspend fun refresh(): Result<Unit> = try {
+        val products = api.getProducts().products
+        // Keep the old cache if the response is empty
+        if (products.isNotEmpty()) {
+            dao.insertAll(products.map { it.toEntity() })
+        }
+        Result.Success(Unit)
     } catch (e: Exception) {
-        Result.Error("Не вдалося завантажити оголошення: ${e.message ?: "невідома помилка"}")
+        // Cache is not cleared, so the screen keeps showing stored data
+        Result.Error("Не вдалося синхронізувати оголошення: ${e.message ?: "невідома помилка"}")
     }
 
-    override suspend fun getAdById(id: Int): Result<Ad> = try {
-        Result.Success(api.getProduct(id).toAd())
-    } catch (e: Exception) {
-        Result.Error("Не вдалося завантажити оголошення: ${e.message ?: "невідома помилка"}")
-    }
+    override suspend fun getAdById(id: Int): Result<Ad> =
+        dao.getById(id)?.toDomain()
+            ?.let { Result.Success(it) }
+            ?: Result.Error("Оголошення не знайдено в кеші")
 }
