@@ -1,9 +1,10 @@
 package com.example.adboardapp.ui
 
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.adboardapp.data.AdRepositoryImpl
+import com.example.adboardapp.AdBoardApp
 import com.example.adboardapp.domain.GetAdByIdUseCase
 import com.example.adboardapp.model.Result
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -13,15 +14,11 @@ import kotlinx.coroutines.launch
 
 // Loads one ad by the id passed in the navigation route
 class DetailViewModel(
-    savedStateHandle: SavedStateHandle,
-    private val getAdById: GetAdByIdUseCase
-) : ViewModel() {
+    application: Application,
+    savedStateHandle: SavedStateHandle
+) : AndroidViewModel(application) {
 
-    // Used by the default ViewModel factory
-    constructor(savedStateHandle: SavedStateHandle) : this(
-        savedStateHandle,
-        GetAdByIdUseCase(AdRepositoryImpl())
-    )
+    private val getAdById = GetAdByIdUseCase((application as AdBoardApp).repository)
 
     private val adId: Int = checkNotNull(savedStateHandle["itemId"])
 
@@ -32,7 +29,7 @@ class DetailViewModel(
         loadAd()
     }
 
-    // Called from the retry button after a network error
+    // Called from the retry button
     fun reload() {
         _uiState.value = DetailUiState()
         loadAd()
