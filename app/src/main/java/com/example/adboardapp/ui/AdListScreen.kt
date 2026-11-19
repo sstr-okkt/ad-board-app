@@ -50,14 +50,17 @@ import com.example.adboardapp.ui.theme.AdBoardAppTheme
 
 // Connects the ViewModel with the stateless screen content
 @Composable
-fun AdListScreen(viewModel: ListViewModel = viewModel()) {
+fun AdListScreen(
+    onAdClick: (Int) -> Unit,
+    viewModel: ListViewModel = viewModel()
+) {
     val context = LocalContext.current
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     AdListContent(
         uiState = uiState,
         onQueryChange = viewModel::onQueryChange,
-        onAdClick = { ad -> showToast(context, "Відкрито: ${ad.title}") },
+        onAdClick = { ad -> onAdClick(ad.id) },
         onAddClick = { showToast(context, "Створити нове оголошення") },
         onPublishClick = { ad -> showToast(context, "Оголошення «${ad.title}» опубліковано") }
     )
@@ -236,7 +239,7 @@ private fun AdCard(
 
 // Small colored badge with the ad status
 @Composable
-private fun StatusBadge(status: AdStatus) {
+internal fun StatusBadge(status: AdStatus) {
     val color = statusColor(status)
     Surface(
         color = color.copy(alpha = 0.15f),
@@ -251,19 +254,19 @@ private fun StatusBadge(status: AdStatus) {
     }
 }
 
-private fun statusColor(status: AdStatus): Color = when (status) {
+internal fun statusColor(status: AdStatus): Color = when (status) {
     AdStatus.PUBLISHED -> Color(0xFF2E7D32)
     AdStatus.DRAFT -> Color(0xFF8D6E00)
     AdStatus.ARCHIVED -> Color(0xFF616161)
 }
 
-private fun statusLabel(status: AdStatus): String = when (status) {
+internal fun statusLabel(status: AdStatus): String = when (status) {
     AdStatus.PUBLISHED -> "Опубліковано"
     AdStatus.DRAFT -> "Чернетка"
     AdStatus.ARCHIVED -> "Архів"
 }
 
-private fun showToast(context: Context, message: String) {
+internal fun showToast(context: Context, message: String) {
     Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
 }
 
@@ -280,3 +283,4 @@ private fun AdListContentPreview() {
         )
     }
 }
+
