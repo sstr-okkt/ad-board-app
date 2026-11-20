@@ -49,6 +49,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -128,7 +129,9 @@ fun DetailContent(
             TopAppBar(
                 title = {
                     Text(
-                        text = stringResource(R.string.ad_screen_title),
+                        text = ad?.title ?: stringResource(R.string.ad_screen_title),
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
                         modifier = Modifier.padding(start = 12.dp)
                     )
                 },
@@ -238,21 +241,6 @@ private fun DetailBody(
 
         Spacer(Modifier.height(16.dp))
 
-        Row(verticalAlignment = Alignment.Top) {
-            Text(
-                text = ad.title,
-                style = MaterialTheme.typography.headlineSmall,
-                fontWeight = FontWeight.SemiBold,
-                modifier = Modifier.weight(1f)
-            )
-            if (ad.isLocal) {
-                Spacer(Modifier.width(8.dp))
-                StatusBadge(ad.status)
-            }
-        }
-
-        Spacer(Modifier.height(8.dp))
-
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(
                 text = ad.formattedPrice(currency),
@@ -273,6 +261,10 @@ private fun DetailBody(
                         modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp)
                     )
                 }
+            }
+            if (ad.isLocal) {
+                Spacer(Modifier.weight(1f))
+                StatusBadge(ad.status)
             }
         }
 
