@@ -54,6 +54,11 @@ class ListViewModel(
         _uiState.update { it.copy(sort = sort) }
     }
 
+    // Called from the filters sheet
+    fun onFiltersChange(filters: AdFilters) {
+        _uiState.update { it.copy(filters = filters) }
+    }
+
     // Called from the heart on the card
     fun onFavoriteClick(id: Int) {
         viewModelScope.launch { toggleFavorite(id) }

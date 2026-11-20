@@ -11,12 +11,15 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -24,12 +27,15 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -38,9 +44,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.adboardapp.model.Ad
+import com.example.adboardapp.model.AdCondition
+import com.example.adboardapp.model.label
 import com.example.adboardapp.ui.theme.AdBoardAppTheme
 import org.koin.androidx.compose.koinViewModel
 
@@ -58,6 +67,7 @@ fun AdListScreen(
         onQueryChange = viewModel::onQueryChange,
         onCategoryChange = viewModel::onCategoryChange,
         onSortChange = viewModel::onSortChange,
+        onFiltersChange = viewModel::onFiltersChange,
         onAdClick = { ad -> onAdClick(ad.id) },
         onFavoriteClick = viewModel::onFavoriteClick,
         onAddClick = onAddClick,
@@ -73,12 +83,15 @@ fun AdListContent(
     onQueryChange: (String) -> Unit,
     onCategoryChange: (String?) -> Unit,
     onSortChange: (AdSort) -> Unit,
+    onFiltersChange: (AdFilters) -> Unit,
     onAdClick: (Ad) -> Unit,
     onFavoriteClick: (Int) -> Unit,
     onAddClick: () -> Unit,
     onRetry: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    var showFilters by remember { mutableStateOf(false) }
+
     Scaffold(
         modifier = modifier.fillMaxSize(),
         topBar = {
@@ -163,6 +176,16 @@ fun AdListContent(
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier.weight(1f)
                         )
+                        TextButton(onClick = { showFilters = true }) {
+                            Text(
+                                text = if (uiState.hasActiveFilters) {
+                                    "Фільтри (${uiState.activeFilterCount})"
+                                } else {
+                                    "Фільтри"
+                                },
+                                style = MaterialTheme.typography.bodySmall
+                            )
+                        }
                         SortMenu(sort = uiState.sort, onSortChange = onSortChange)
                     }
                 }
@@ -179,6 +202,7 @@ fun AdListContent(
 
                     uiState.visibleAds.isEmpty() -> EmptyState(
                         hasQuery = uiState.query.isNotBlank(),
+                        hasFilters = uiState.hasActiveFilters,
                         onAddClick = onAddClick,
                         modifier = Modifier.weight(1f)
                     )
@@ -200,7 +224,173 @@ fun AdListContent(
             }
         }
     }
+
+    if (showFilters) {
+        FiltersSheet(
+            initial = uiState.filters,
+            cities = uiState.cities,
+            resultCount = { draft -> uiState.copy(filters = draft).visibleAds.size },
+            onApply = onFiltersChange,
+            onDismiss = { showFilters = false }
+        )
+    }
 }
+
+// Bottom sheet with the extra filters
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun FiltersSheet(
+    initial: AdFilters,
+    cities: List<String>,
+    resultCount: (AdFilters) -> Int,
+    onApply: (AdFilters) -> Unit,
+    onDismiss: () -> Unit
+) {
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    var draft by remember { mutableStateOf(initial) }
+    val result = normalized(draft)
+
+    ModalBottomSheet(
+        onDismissRequest = onDismiss,
+        sheetState = sheetState
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+                .navigationBarsPadding()
+        ) {
+            Text(
+                text = "Фільтри",
+                style = MaterialTheme.typography.titleLarge
+            )
+
+            Spacer(Modifier.height(12.dp))
+
+            OptionDropdown(
+                label = "Місто",
+                options = listOf(ALL_CITIES) + cities,
+                selected = draft.city ?: ALL_CITIES,
+                onSelect = { value ->
+                    draft = draft.copy(city = value.takeUnless { it == ALL_CITIES })
+                }
+            )
+
+            Spacer(Modifier.height(12.dp))
+
+            Text(
+                text = "Ціна, грн",
+                style = MaterialTheme.typography.labelLarge,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+
+            Spacer(Modifier.height(8.dp))
+
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                PriceField(
+                    label = "Від",
+                    value = draft.minPrice,
+                    modifier = Modifier.weight(1f),
+                    onValueChange = { draft = draft.copy(minPrice = it) }
+                )
+                PriceField(
+                    label = "До",
+                    value = draft.maxPrice,
+                    modifier = Modifier.weight(1f),
+                    onValueChange = { draft = draft.copy(maxPrice = it) }
+                )
+            }
+
+            Spacer(Modifier.height(12.dp))
+
+            Text(
+                text = "Стан",
+                style = MaterialTheme.typography.labelLarge,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                FilterChip(
+                    selected = draft.condition == null,
+                    onClick = { draft = draft.copy(condition = null) },
+                    label = { Text("Усі") }
+                )
+                AdCondition.entries.forEach { condition ->
+                    FilterChip(
+                        selected = draft.condition == condition,
+                        onClick = { draft = draft.copy(condition = condition) },
+                        label = { Text(condition.label()) }
+                    )
+                }
+            }
+
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Checkbox(
+                    checked = draft.onlyWithPhoto,
+                    onCheckedChange = { draft = draft.copy(onlyWithPhoto = it) }
+                )
+                Text("Тільки з фото")
+            }
+
+            Spacer(Modifier.height(16.dp))
+
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                OutlinedButton(
+                    onClick = { draft = AdFilters() },
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Text("Скинути")
+                }
+                Button(
+                    onClick = {
+                        onApply(result)
+                        onDismiss()
+                    },
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Text("Показати ${resultCount(result)}")
+                }
+            }
+
+            Spacer(Modifier.height(16.dp))
+        }
+    }
+}
+
+// Price input for the filters
+@Composable
+private fun PriceField(
+    label: String,
+    value: Int?,
+    modifier: Modifier = Modifier,
+    onValueChange: (Int?) -> Unit
+) {
+    OutlinedTextField(
+        value = value?.toString() ?: "",
+        onValueChange = { text ->
+            if (text.all { it.isDigit() } && text.length <= 9) {
+                onValueChange(text.toIntOrNull())
+            }
+        },
+        label = { Text(label) },
+        singleLine = true,
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+        modifier = modifier
+    )
+}
+
+// Swaps min and max when the user typed them in the wrong order
+private fun normalized(filters: AdFilters): AdFilters {
+    val min = filters.minPrice
+    val max = filters.maxPrice
+    return if (min != null && max != null && min > max) {
+        filters.copy(minPrice = max, maxPrice = min)
+    } else {
+        filters
+    }
+}
+
+private const val ALL_CITIES = "Усі міста"
 
 // Horizontal list of category filters
 @Composable
@@ -267,9 +457,11 @@ private fun SortMenu(
 @Composable
 private fun EmptyState(
     hasQuery: Boolean,
+    hasFilters: Boolean,
     onAddClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val isFiltered = hasQuery || hasFilters
     Box(
         modifier = modifier
             .fillMaxWidth()
@@ -278,13 +470,13 @@ private fun EmptyState(
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Text(
-                text = if (hasQuery) "Нічого не знайдено" else "На дошці ще немає оголошень",
+                text = if (isFiltered) "Нічого не знайдено" else "На дошці ще немає оголошень",
                 style = MaterialTheme.typography.titleMedium
             )
             Spacer(Modifier.height(8.dp))
-            if (hasQuery) {
+            if (isFiltered) {
                 Text(
-                    text = "Спробуйте змінити запит або категорію",
+                    text = "Спробуйте змінити запит або фільтри",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -306,6 +498,7 @@ private fun AdListContentPreview() {
             onQueryChange = {},
             onCategoryChange = {},
             onSortChange = {},
+            onFiltersChange = {},
             onAdClick = {},
             onFavoriteClick = {},
             onAddClick = {},
