@@ -11,6 +11,7 @@ import com.example.adboardapp.model.AdStatus
 import com.example.adboardapp.model.Author
 import com.example.adboardapp.model.adCities
 import com.example.adboardapp.model.categoryKeyFromApi
+import com.example.adboardapp.model.cityName
 import java.time.LocalDate
 import kotlin.math.roundToInt
 
@@ -107,7 +108,7 @@ private fun descriptionFor(dto: ProductDto, isNew: Boolean, city: String): Strin
         append("Продаю ${dto.title.lowercase()}.")
         dto.brand?.let { append(" Бренд: $it.") }
         append(if (isNew) " Стан новий." else " Стан вживаний, все працює.")
-        append(" Можливий огляд у місті $city.")
+        append(" Можливий огляд у місті ${cityName(city, "uk")}.")
         append(" Пишіть або телефонуйте, відповідаю швидко.")
     }
 
