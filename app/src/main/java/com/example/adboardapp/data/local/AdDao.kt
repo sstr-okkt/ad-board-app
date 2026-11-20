@@ -49,8 +49,8 @@ abstract class AdDao {
     @Query("DELETE FROM ad_images WHERE adId = :adId")
     abstract suspend fun deleteImages(adId: Int)
 
-    @Query("UPDATE ads SET isFavorite = :value WHERE id = :id")
-    abstract suspend fun setFavorite(id: Int, value: Boolean)
+    @Query("UPDATE ads SET isFavorite = NOT isFavorite WHERE id = :id")
+    abstract suspend fun toggleFavorite(id: Int)
 
     @Query("UPDATE ads SET views = views + 1 WHERE id = :id")
     abstract suspend fun incrementViews(id: Int)

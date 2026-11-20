@@ -2,7 +2,7 @@ package com.example.adboardapp.ui
 
 import android.content.Context
 import android.widget.Toast
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,20 +13,27 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -35,14 +42,22 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import coil3.compose.AsyncImage
 import com.example.adboardapp.model.Ad
 import com.example.adboardapp.model.AdStatus
 import com.example.adboardapp.ui.theme.AdBoardAppTheme
@@ -60,9 +75,11 @@ fun AdListScreen(
     AdListContent(
         uiState = uiState,
         onQueryChange = viewModel::onQueryChange,
+        onCategoryChange = viewModel::onCategoryChange,
+        onSortChange = viewModel::onSortChange,
         onAdClick = { ad -> onAdClick(ad.id) },
+        onFavoriteClick = viewModel::onFavoriteClick,
         onAddClick = { showToast(context, "Створити нове оголошення") },
-        onPublishClick = { ad -> showToast(context, "Оголошення «${ad.title}» опубліковано") },
         onRetry = viewModel::refresh
     )
 }
@@ -73,9 +90,11 @@ fun AdListScreen(
 fun AdListContent(
     uiState: ListUiState,
     onQueryChange: (String) -> Unit,
+    onCategoryChange: (String?) -> Unit,
+    onSortChange: (AdSort) -> Unit,
     onAdClick: (Ad) -> Unit,
+    onFavoriteClick: (Int) -> Unit,
     onAddClick: () -> Unit,
-    onPublishClick: (Ad) -> Unit,
     onRetry: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -112,8 +131,8 @@ fun AdListContent(
                 OutlinedTextField(
                     value = uiState.query,
                     onValueChange = onQueryChange,
-                    label = { Text("Пошук за назвою") },
-                    placeholder = { Text("Наприклад, ноутбук") },
+                    label = { Text("Пошук") },
+                    placeholder = { Text("Назва, опис або місто") },
                     singleLine = true,
                     modifier = Modifier
                         .fillMaxWidth()
@@ -144,15 +163,27 @@ fun AdListContent(
                     }
                 }
 
-                if (!uiState.isLoading) {
-                    Text(
-                        text = "Знайдено ${uiState.visibleAds.size} з ${uiState.ads.size}",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.padding(horizontal = 16.dp)
-                    )
+                CategoryChips(
+                    categories = uiState.categories,
+                    selected = uiState.selectedCategory,
+                    onSelect = onCategoryChange
+                )
 
-                    Spacer(Modifier.height(8.dp))
+                if (!uiState.isLoading) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp, vertical = 4.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "Знайдено ${uiState.visibleAds.size} із ${uiState.ads.size}",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.weight(1f)
+                        )
+                        SortMenu(sort = uiState.sort, onSortChange = onSortChange)
+                    }
                 }
 
                 when {
@@ -165,17 +196,11 @@ fun AdListContent(
                         CircularProgressIndicator()
                     }
 
-                    uiState.visibleAds.isEmpty() -> Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .weight(1f),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = "Нічого не знайдено",
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
+                    uiState.visibleAds.isEmpty() -> EmptyState(
+                        hasQuery = uiState.query.isNotBlank(),
+                        onAddClick = onAddClick,
+                        modifier = Modifier.weight(1f)
+                    )
 
                     else -> LazyColumn(
                         modifier = Modifier.weight(1f),
@@ -186,7 +211,7 @@ fun AdListContent(
                             AdCard(
                                 ad = ad,
                                 onClick = { onAdClick(ad) },
-                                onPublish = { onPublishClick(ad) }
+                                onFavoriteClick = { onFavoriteClick(ad.id) }
                             )
                         }
                     }
@@ -196,67 +221,203 @@ fun AdListContent(
     }
 }
 
-// Single ad card
+// Horizontal list of category filters
+@Composable
+private fun CategoryChips(
+    categories: List<String>,
+    selected: String?,
+    onSelect: (String?) -> Unit
+) {
+    LazyRow(
+        modifier = Modifier.fillMaxWidth(),
+        contentPadding = PaddingValues(horizontal = 16.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        item {
+            FilterChip(
+                selected = selected == null,
+                onClick = { onSelect(null) },
+                label = { Text("Усі") }
+            )
+        }
+        items(categories) { category ->
+            FilterChip(
+                selected = selected == category,
+                onClick = { onSelect(category) },
+                label = { Text(category) }
+            )
+        }
+    }
+}
+
+// Dropdown with the list sort order
+@Composable
+private fun SortMenu(
+    sort: AdSort,
+    onSortChange: (AdSort) -> Unit
+) {
+    var expanded by remember { mutableStateOf(false) }
+
+    Box {
+        TextButton(onClick = { expanded = true }) {
+            Text(
+                text = "${sort.label} ▾",
+                style = MaterialTheme.typography.bodySmall
+            )
+        }
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false }
+        ) {
+            AdSort.entries.forEach { option ->
+                DropdownMenuItem(
+                    text = { Text(option.label) },
+                    onClick = {
+                        onSortChange(option)
+                        expanded = false
+                    }
+                )
+            }
+        }
+    }
+}
+
+// Single ad card, photo on the left like on a board
 @Composable
 private fun AdCard(
     ad: Ad,
     onClick: () -> Unit,
-    onPublish: () -> Unit
+    onFavoriteClick: () -> Unit
 ) {
     Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable(onClick = onClick),
+        onClick = onClick,
+        modifier = Modifier.fillMaxWidth(),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
+        Row(modifier = Modifier.padding(12.dp)) {
+            AdThumbnail(
+                url = ad.imageUrls.firstOrNull(),
+                modifier = Modifier.size(112.dp)
+            )
+
+            Spacer(Modifier.width(12.dp))
+
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .heightIn(min = 112.dp)
+            ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(
+                        text = ad.formattedPrice(),
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.weight(1f)
+                    )
+                    FavoriteButton(
+                        isFavorite = ad.isFavorite,
+                        onClick = onFavoriteClick
+                    )
+                }
+
                 Text(
                     text = ad.title,
                     style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.SemiBold,
-                    modifier = Modifier.weight(1f)
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis
                 )
-                StatusBadge(ad.status)
+
+                Spacer(Modifier.height(6.dp))
+
+                Text(
+                    text = "${ad.city} · ${formatPublishedAt(ad.publishedAt)}",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+
+                Text(
+                    text = viewsLabel(ad.views),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
             }
+        }
+    }
+}
 
-            Spacer(Modifier.height(8.dp))
-
+// Photo of the ad or a placeholder when it is missing
+@Composable
+private fun AdThumbnail(
+    url: String?,
+    modifier: Modifier = Modifier
+) {
+    Box(
+        modifier = modifier
+            .clip(RoundedCornerShape(12.dp))
+            .background(MaterialTheme.colorScheme.surfaceVariant),
+        contentAlignment = Alignment.Center
+    ) {
+        if (url.isNullOrBlank()) {
             Text(
-                text = ad.formattedPrice(),
-                style = MaterialTheme.typography.titleLarge,
-                color = MaterialTheme.colorScheme.primary
-            )
-
-            Spacer(Modifier.height(4.dp))
-
-            Text(
-                text = "${ad.category} · ${ad.city}",
-                style = MaterialTheme.typography.bodyMedium
-            )
-
-            Spacer(Modifier.height(2.dp))
-
-            Text(
-                text = buildString {
-                    append("${ad.views} переглядів")
-                    append(" · автор: ${ad.author.name}")
-                    ad.publishedAt?.let { append(" · $it") }
-                },
-                style = MaterialTheme.typography.bodySmall,
+                text = "немає фото",
+                style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
+        } else {
+            AsyncImage(
+                model = url,
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier.fillMaxSize()
+            )
+        }
+    }
+}
 
-            Spacer(Modifier.height(12.dp))
+// Heart that adds or removes the ad from favorites
+@Composable
+private fun FavoriteButton(
+    isFavorite: Boolean,
+    onClick: () -> Unit
+) {
+    IconButton(onClick = onClick) {
+        Text(
+            text = if (isFavorite) "♥" else "♡",
+            fontSize = 22.sp,
+            color = if (isFavorite) Color(0xFFE91E63) else MaterialTheme.colorScheme.onSurfaceVariant
+        )
+    }
+}
 
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                Button(onClick = onClick) {
-                    Text("Детальніше")
-                }
-                if (ad.status == AdStatus.DRAFT) {
-                    OutlinedButton(onClick = onPublish) {
-                        Text("Опублікувати")
-                    }
+// Shown when the list has no ads to display
+@Composable
+private fun EmptyState(
+    hasQuery: Boolean,
+    onAddClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(24.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Text(
+                text = if (hasQuery) "Нічого не знайдено" else "На дошці ще немає оголошень",
+                style = MaterialTheme.typography.titleMedium
+            )
+            Spacer(Modifier.height(8.dp))
+            if (hasQuery) {
+                Text(
+                    text = "Спробуйте змінити запит або категорію",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            } else {
+                Button(onClick = onAddClick) {
+                    Text("Подати оголошення")
                 }
             }
         }
@@ -303,11 +464,12 @@ private fun AdListContentPreview() {
         AdListContent(
             uiState = ListUiState(ads = previewAds, isLoading = false),
             onQueryChange = {},
+            onCategoryChange = {},
+            onSortChange = {},
             onAdClick = {},
+            onFavoriteClick = {},
             onAddClick = {},
-            onPublishClick = {},
             onRetry = {}
         )
     }
 }
-

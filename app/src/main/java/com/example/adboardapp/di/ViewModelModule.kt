@@ -7,6 +7,6 @@ import org.koin.dsl.module
 
 // Provides the ViewModels
 val viewModelModule = module {
-    viewModel { ListViewModel(get(), get()) }
+    viewModel { ListViewModel(get(), get(), get()) }
     viewModel { params -> DetailViewModel(params.get(), get()) }
 }

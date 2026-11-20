@@ -39,4 +39,6 @@ class AdRepositoryImpl(
         dao.getById(id)?.toDomain()
             ?.let { Result.Success(it) }
             ?: Result.Error("Оголошення не знайдено в кеші")
+
+    override suspend fun toggleFavorite(id: Int) = dao.toggleFavorite(id)
 }

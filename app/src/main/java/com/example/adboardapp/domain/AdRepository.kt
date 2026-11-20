@@ -15,4 +15,7 @@ interface AdRepository {
 
     // Reads one ad from the local cache
     suspend fun getAdById(id: Int): Result<Ad>
+
+    // Adds or removes the ad from favorites
+    suspend fun toggleFavorite(id: Int)
 }
