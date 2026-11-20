@@ -6,17 +6,24 @@ because Room is the single source of truth.
 
 ## Screenshots
 
-| Home | Ad details | Create ad |
-| --- | --- | --- |
-| ![Home](docs/screenshots/home.png) | ![Details](docs/screenshots/details.png) | ![Create ad](docs/screenshots/edit_form.png) |
+<p align="center">
+  <img src="docs/screenshots/home.png" width="240" alt="Home">
+  <img src="docs/screenshots/details.png" width="240" alt="Ad details">
+  <img src="docs/screenshots/edit_form.png" width="240" alt="Create ad">
+</p>
+<p align="center"><sub>Home · Ad details · Create ad</sub></p>
 
-| My ads | Favorites | Filters |
-| --- | --- | --- |
-| ![My ads](docs/screenshots/my_ads.png) | ![Favorites](docs/screenshots/favorites.png) | ![Filters](docs/screenshots/filters.png) |
+<p align="center">
+  <img src="docs/screenshots/my_ads.png" width="240" alt="My ads">
+  <img src="docs/screenshots/favorites.png" width="240" alt="Favorites">
+  <img src="docs/screenshots/filters.png" width="240" alt="Filters">
+</p>
+<p align="center"><sub>My ads · Favorites · Filters</sub></p>
 
-| Offline mode |
-| --- |
-| ![Offline](docs/screenshots/offline.png) |
+<p align="center">
+  <img src="docs/screenshots/offline.png" width="240" alt="Offline mode">
+</p>
+<p align="center"><sub>Offline mode</sub></p>
 
 ## Features
 
