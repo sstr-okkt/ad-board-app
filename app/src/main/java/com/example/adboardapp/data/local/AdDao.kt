@@ -28,6 +28,10 @@ abstract class AdDao {
     @Query("SELECT * FROM ads WHERE id = :id")
     abstract suspend fun getById(id: Int): AdWithImages?
 
+    @Transaction
+    @Query("SELECT * FROM ads WHERE id = :id")
+    abstract fun observeById(id: Int): Flow<AdWithImages?>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     abstract suspend fun insertAll(ads: List<AdEntity>)
 
@@ -66,6 +70,13 @@ abstract class AdDao {
     open suspend fun replaceRemote(ads: List<AdEntity>, images: List<AdImageEntity>) {
         deleteRemote()
         insertAll(ads)
+        insertImages(images)
+    }
+
+    // Replaces all photos of one ad
+    @Transaction
+    open suspend fun replaceAdImages(adId: Int, images: List<AdImageEntity>) {
+        deleteImages(adId)
         insertImages(images)
     }
 }

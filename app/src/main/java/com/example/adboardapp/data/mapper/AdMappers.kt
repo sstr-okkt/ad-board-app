@@ -9,14 +9,9 @@ import com.example.adboardapp.model.AdCondition
 import com.example.adboardapp.model.AdSource
 import com.example.adboardapp.model.AdStatus
 import com.example.adboardapp.model.Author
+import com.example.adboardapp.model.adCities
 import java.time.LocalDate
 import kotlin.math.roundToInt
-
-// Ukrainian cities used for the demo feed
-private val cities = listOf(
-    "Київ", "Одеса", "Львів", "Дніпро",
-    "Харків", "Вінниця", "Запоріжжя", "Івано-Франківськ"
-)
 
 // Ukrainian sellers used for the demo feed
 private val sellerNames = listOf(
@@ -28,7 +23,7 @@ private val sellerNames = listOf(
 fun ProductDto.toEntity(): AdEntity {
     val reviewer = reviews.firstOrNull()
     val isNew = id % 3 == 0
-    val city = cities[id % cities.size]
+    val city = adCities[id % adCities.size]
 
     return AdEntity(
         id = id,
@@ -83,6 +78,26 @@ fun AdWithImages.toDomain(): Ad = Ad(
     source = runCatching { AdSource.valueOf(ad.source) }
         .getOrDefault(AdSource.REMOTE),
     isFavorite = ad.isFavorite
+)
+
+// Converts the domain model back into a Room entity
+fun Ad.toEntity(): AdEntity = AdEntity(
+    id = id,
+    title = title,
+    description = description,
+    price = price,
+    isNegotiable = isNegotiable,
+    category = category,
+    city = city,
+    condition = condition.name,
+    views = views,
+    status = status.name,
+    authorName = author.name,
+    authorRating = author.rating,
+    authorContact = author.contact,
+    publishedAt = publishedAt,
+    source = source.name,
+    isFavorite = isFavorite
 )
 
 // Short ad text built from the product data

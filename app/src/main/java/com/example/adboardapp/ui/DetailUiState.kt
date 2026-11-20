@@ -6,5 +6,6 @@ import com.example.adboardapp.model.Ad
 data class DetailUiState(
     val ad: Ad? = null,
     val isLoading: Boolean = true,
-    val errorMessage: String? = null
+    val errorMessage: String? = null,
+    val isDeleted: Boolean = false
 )

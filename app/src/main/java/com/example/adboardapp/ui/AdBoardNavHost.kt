@@ -13,8 +13,9 @@ import org.koin.core.parameter.parametersOf
 // Routes used in the app
 private const val LIST_ROUTE = "list"
 private const val DETAILS_ROUTE = "details"
+private const val EDIT_ROUTE = "edit"
 
-// Single NavHost with the list and the details screens
+// Single NavHost with the list, details and edit screens
 @Composable
 fun AdBoardNavHost(
     navController: NavHostController = rememberNavController()
@@ -25,7 +26,8 @@ fun AdBoardNavHost(
     ) {
         composable(LIST_ROUTE) {
             AdListScreen(
-                onAdClick = { id -> navController.navigate("$DETAILS_ROUTE/$id") }
+                onAdClick = { id -> navController.navigate("$DETAILS_ROUTE/$id") },
+                onAddClick = { navController.navigate("$EDIT_ROUTE?adId=0") }
             )
         }
 
@@ -36,7 +38,26 @@ fun AdBoardNavHost(
             val itemId = entry.arguments?.getInt("itemId") ?: 0
             DetailScreen(
                 viewModel = koinViewModel(parameters = { parametersOf(itemId) }),
-                onBack = { navController.popBackStack() }
+                onBack = { navController.popBackStack() },
+                onEdit = { navController.navigate("$EDIT_ROUTE?adId=$itemId") },
+                onDeleted = { navController.popBackStack() }
+            )
+        }
+
+        composable(
+            route = "$EDIT_ROUTE?adId={adId}",
+            arguments = listOf(
+                navArgument("adId") {
+                    type = NavType.IntType
+                    defaultValue = 0
+                }
+            )
+        ) { entry ->
+            val adId = entry.arguments?.getInt("adId") ?: 0
+            AdEditScreen(
+                viewModel = koinViewModel(parameters = { parametersOf(adId) }),
+                onBack = { navController.popBackStack() },
+                onSaved = { navController.popBackStack() }
             )
         }
     }

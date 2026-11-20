@@ -1,7 +1,5 @@
 package com.example.adboardapp.ui
 
-import android.content.Context
-import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -50,7 +48,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -67,9 +64,9 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun AdListScreen(
     onAdClick: (Int) -> Unit,
+    onAddClick: () -> Unit,
     viewModel: ListViewModel = koinViewModel()
 ) {
-    val context = LocalContext.current
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     AdListContent(
@@ -79,7 +76,7 @@ fun AdListScreen(
         onSortChange = viewModel::onSortChange,
         onAdClick = { ad -> onAdClick(ad.id) },
         onFavoriteClick = viewModel::onFavoriteClick,
-        onAddClick = { showToast(context, "Створити нове оголошення") },
+        onAddClick = onAddClick,
         onRetry = viewModel::refresh
     )
 }
@@ -451,10 +448,6 @@ internal fun statusLabel(status: AdStatus): String = when (status) {
     AdStatus.PUBLISHED -> "Опубліковано"
     AdStatus.DRAFT -> "Чернетка"
     AdStatus.ARCHIVED -> "Архів"
-}
-
-internal fun showToast(context: Context, message: String) {
-    Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
 }
 
 @Preview(showBackground = true)

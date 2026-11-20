@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.adboardapp.domain.ObserveAdsUseCase
 import com.example.adboardapp.domain.RefreshAdsUseCase
 import com.example.adboardapp.domain.ToggleFavoriteUseCase
+import com.example.adboardapp.model.AdStatus
 import com.example.adboardapp.model.Result
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -26,7 +27,13 @@ class ListViewModel(
         // Cached data is shown immediately, even without network
         viewModelScope.launch {
             observeAds().collect { ads ->
-                _uiState.update { it.copy(ads = ads, isLoading = false) }
+                // Drafts are not shown on the public board
+                _uiState.update {
+                    it.copy(
+                        ads = ads.filter { ad -> ad.status == AdStatus.PUBLISHED },
+                        isLoading = false
+                    )
+                }
             }
         }
         refresh()

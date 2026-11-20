@@ -21,6 +21,7 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -33,8 +34,10 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -57,15 +60,23 @@ import com.example.adboardapp.ui.theme.AdBoardAppTheme
 @Composable
 fun DetailScreen(
     viewModel: DetailViewModel,
-    onBack: () -> Unit
+    onBack: () -> Unit,
+    onEdit: () -> Unit,
+    onDeleted: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
+    LaunchedEffect(uiState.isDeleted) {
+        if (uiState.isDeleted) onDeleted()
+    }
 
     DetailContent(
         uiState = uiState,
         onBack = onBack,
         onRetry = viewModel::reload,
-        onFavoriteClick = viewModel::onFavoriteClick
+        onFavoriteClick = viewModel::onFavoriteClick,
+        onEdit = onEdit,
+        onDeleteConfirmed = viewModel::delete
     )
 }
 
@@ -77,9 +88,35 @@ fun DetailContent(
     onBack: () -> Unit,
     onRetry: () -> Unit,
     onFavoriteClick: () -> Unit,
+    onEdit: () -> Unit,
+    onDeleteConfirmed: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val ad = uiState.ad
+    var showDeleteDialog by remember { mutableStateOf(false) }
+
+    if (showDeleteDialog) {
+        AlertDialog(
+            onDismissRequest = { showDeleteDialog = false },
+            title = { Text("Видалити оголошення?") },
+            text = { Text("Дію не можна скасувати.") },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        showDeleteDialog = false
+                        onDeleteConfirmed()
+                    }
+                ) {
+                    Text("Видалити")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDeleteDialog = false }) {
+                    Text("Скасувати")
+                }
+            }
+        )
+    }
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
@@ -156,7 +193,11 @@ fun DetailContent(
                     .fillMaxSize(),
                 contentAlignment = Alignment.TopCenter
             ) {
-                DetailBody(ad = ad)
+                DetailBody(
+                    ad = ad,
+                    onEdit = onEdit,
+                    onDelete = { showDeleteDialog = true }
+                )
             }
         }
     }
@@ -164,7 +205,11 @@ fun DetailContent(
 
 // Main content of the details screen
 @Composable
-private fun DetailBody(ad: Ad) {
+private fun DetailBody(
+    ad: Ad,
+    onEdit: () -> Unit,
+    onDelete: () -> Unit
+) {
     val context = LocalContext.current
     var phoneVisible by rememberSaveable(ad.id) { mutableStateOf(false) }
 
@@ -278,6 +323,25 @@ private fun DetailBody(ad: Ad) {
             }
         }
 
+        if (ad.isLocal) {
+            Spacer(Modifier.height(8.dp))
+
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                OutlinedButton(
+                    onClick = onEdit,
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Text("Редагувати")
+                }
+                OutlinedButton(
+                    onClick = onDelete,
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Text("Видалити")
+                }
+            }
+        }
+
         Spacer(Modifier.height(24.dp))
     }
 }
@@ -352,10 +416,12 @@ private fun SellerCard(ad: Ad) {
                 text = ad.author.name,
                 style = MaterialTheme.typography.titleMedium
             )
-            Text(
-                text = "Рейтинг: ${ad.author.rating} із 5.0",
-                style = MaterialTheme.typography.bodyMedium
-            )
+            if (ad.author.rating > 0.0) {
+                Text(
+                    text = "Рейтинг: ${ad.author.rating} із 5.0",
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            }
         }
     }
 }
@@ -411,7 +477,9 @@ private fun DetailContentPreview() {
             uiState = DetailUiState(ad = previewAds.first(), isLoading = false),
             onBack = {},
             onRetry = {},
-            onFavoriteClick = {}
+            onFavoriteClick = {},
+            onEdit = {},
+            onDeleteConfirmed = {}
         )
     }
 }
