@@ -310,7 +310,7 @@ private fun DetailBody(
                         onClick = { dialPhone(context, ad.author.contact) },
                         modifier = Modifier.weight(1f)
                     ) {
-                        Text(ad.author.contact)
+                        Text(formatPhoneNumber(ad.author.contact))
                     }
                 } else {
                     Button(

@@ -68,7 +68,9 @@ class AdEditViewModel(    private val adId: Int,
     }
 
     fun onPhoneChange(value: String) {
-        _uiState.update { it.copy(phone = value, phoneError = null, isDirty = true) }
+        _uiState.update {
+            it.copy(phone = formatPhoneNumber(value), phoneError = null, isDirty = true)
+        }
     }
 
     fun onImageAdded(url: String) {
@@ -125,7 +127,7 @@ class AdEditViewModel(    private val adId: Int,
                         category = ad.category,
                         city = ad.city,
                         condition = ad.condition,
-                        phone = ad.author.contact.orEmpty(),
+                        phone = formatPhoneNumber(ad.author.contact.orEmpty()),
                         imageUrls = ad.imageUrls
                     )
                 }
