@@ -36,6 +36,7 @@
     <string name="add_ad">Додати оголошення</string>
     <string name="search">Пошук</string>
     <string name="search_placeholder">Назва, опис або місто</string>
+    <string name="clear_search">Очистити пошук</string>
     <string name="offline_banner">Немає з\'єднання. Показано збережені дані</string>
     <string name="retry">Повторити</string>
     <string name="found_count">Знайдено %1$d із %2$d</string>
