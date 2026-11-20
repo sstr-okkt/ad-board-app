@@ -1,5 +1,6 @@
 package com.example.adboardapp.ui
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -20,6 +21,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.PrimaryTabRow
+import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
@@ -37,6 +39,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.adboardapp.model.Ad
 import com.example.adboardapp.model.AdStatus
+import com.example.adboardapp.model.ThemeMode
 import com.example.adboardapp.ui.theme.AdBoardAppTheme
 import org.koin.androidx.compose.koinViewModel
 
@@ -46,10 +49,53 @@ fun MyAdsScreen(
     onAdClick: (Int) -> Unit,
     onAddClick: () -> Unit,
     onEditClick: (Int) -> Unit,
-    viewModel: MyAdsViewModel = koinViewModel()
+    viewModel: MyAdsViewModel = koinViewModel(),
+    themeViewModel: ThemeViewModel = koinViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val themeMode by themeViewModel.mode.collectAsStateWithLifecycle()
     var pendingDelete by remember { mutableStateOf<Ad?>(null) }
+    var showThemeDialog by remember { mutableStateOf(false) }
+
+    if (showThemeDialog) {
+        AlertDialog(
+            onDismissRequest = { showThemeDialog = false },
+            title = { Text("Тема оформлення") },
+            text = {
+                Column {
+                    ThemeMode.entries.forEach { mode ->
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable {
+                                    themeViewModel.setMode(mode)
+                                    showThemeDialog = false
+                                }
+                                .padding(vertical = 8.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            RadioButton(
+                                selected = themeMode == mode,
+                                onClick = {
+                                    themeViewModel.setMode(mode)
+                                    showThemeDialog = false
+                                }
+                            )
+                            Text(
+                                text = mode.label,
+                                modifier = Modifier.padding(start = 8.dp)
+                            )
+                        }
+                    }
+                }
+            },
+            confirmButton = {
+                TextButton(onClick = { showThemeDialog = false }) {
+                    Text("Закрити")
+                }
+            }
+        )
+    }
 
     if (pendingDelete != null) {
         AlertDialog(
@@ -83,7 +129,8 @@ fun MyAdsScreen(
         onPublishClick = viewModel::publish,
         onArchiveClick = viewModel::archive,
         onDeleteClick = { ad -> pendingDelete = ad },
-        onAddClick = onAddClick
+        onAddClick = onAddClick,
+        onThemeClick = { showThemeDialog = true }
     )
 }
 
@@ -100,6 +147,7 @@ fun MyAdsContent(
     onArchiveClick: (Int) -> Unit,
     onDeleteClick: (Ad) -> Unit,
     onAddClick: () -> Unit,
+    onThemeClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Scaffold(
@@ -108,6 +156,9 @@ fun MyAdsContent(
             TopAppBar(
                 title = { Text("Мої оголошення") },
                 actions = {
+                    TextButton(onClick = onThemeClick) {
+                        Text("Тема")
+                    }
                     TextButton(onClick = onAddClick) {
                         Text("Додати")
                     }
@@ -282,7 +333,8 @@ private fun MyAdsContentPreview() {
             onPublishClick = {},
             onArchiveClick = {},
             onDeleteClick = {},
-            onAddClick = {}
+            onAddClick = {},
+            onThemeClick = {}
         )
     }
 }

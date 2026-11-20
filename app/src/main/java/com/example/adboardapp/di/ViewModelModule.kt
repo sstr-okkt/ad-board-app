@@ -5,6 +5,7 @@ import com.example.adboardapp.ui.DetailViewModel
 import com.example.adboardapp.ui.FavoritesViewModel
 import com.example.adboardapp.ui.ListViewModel
 import com.example.adboardapp.ui.MyAdsViewModel
+import com.example.adboardapp.ui.ThemeViewModel
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 
@@ -15,4 +16,5 @@ val viewModelModule = module {
     viewModel { params -> AdEditViewModel(params.get(), get(), get()) }
     viewModel { MyAdsViewModel(get(), get(), get(), get()) }
     viewModel { FavoritesViewModel(get(), get()) }
+    viewModel { ThemeViewModel(get()) }
 }

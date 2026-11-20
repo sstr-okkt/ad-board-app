@@ -4,6 +4,7 @@ import android.app.Application
 import com.example.adboardapp.di.databaseModule
 import com.example.adboardapp.di.networkModule
 import com.example.adboardapp.di.repositoryModule
+import com.example.adboardapp.di.settingsModule
 import com.example.adboardapp.di.useCaseModule
 import com.example.adboardapp.di.viewModelModule
 import org.koin.android.ext.koin.androidContext
@@ -18,6 +19,7 @@ class AdBoardApp : Application() {
             modules(
                 networkModule,
                 databaseModule,
+                settingsModule,
                 repositoryModule,
                 useCaseModule,
                 viewModelModule

@@ -7,23 +7,25 @@ because Room is the single source of truth.
 ## Screenshots
 
 <p align="center">
-  <img src="docs/screenshots/home.png" width="240" alt="Home">
+  <img src="docs/screenshots/home_light.png" width="240" alt="Light theme">
+  <img src="docs/screenshots/home.png" width="240" alt="Dark theme">
+  <img src="docs/screenshots/theme_switch.png" width="240" alt="Theme switch">
+</p>
+<p align="center"><sub>Light theme · Dark theme · Theme switch</sub></p>
+
+<p align="center">
   <img src="docs/screenshots/details.png" width="240" alt="Ad details">
   <img src="docs/screenshots/edit_form.png" width="240" alt="Create ad">
+  <img src="docs/screenshots/my_ads.png" width="240" alt="My ads">
 </p>
-<p align="center"><sub>Home · Ad details · Create ad</sub></p>
+<p align="center"><sub>Ad details · Create ad · My ads</sub></p>
 
 <p align="center">
-  <img src="docs/screenshots/my_ads.png" width="240" alt="My ads">
   <img src="docs/screenshots/favorites.png" width="240" alt="Favorites">
   <img src="docs/screenshots/filters.png" width="240" alt="Filters">
-</p>
-<p align="center"><sub>My ads · Favorites · Filters</sub></p>
-
-<p align="center">
   <img src="docs/screenshots/offline.png" width="240" alt="Offline mode">
 </p>
-<p align="center"><sub>Offline mode</sub></p>
+<p align="center"><sub>Favorites · Filters · Offline mode</sub></p>
 
 ## Features
 
@@ -39,6 +41,7 @@ because Room is the single source of truth.
 - Favorites.
 - Offline-first: the cached list stays available, a banner explains the missing connection,
   and user ads are never overwritten by a network refresh.
+- Light and dark themes with a System / Light / Dark switch, saved between launches.
 - Dependency injection with Koin.
 
 ## Tech stack
@@ -72,8 +75,9 @@ AdRepositoryImpl
 
 - `ui` contains screens, ViewModels, UiState and UI-only models.
 - `domain` contains the repository contract and use cases.
-- `data` contains Room entities and DAO, Retrofit API and DTOs, mappers and the repository.
-- `di` contains Koin modules: network, database, repository, use cases, ViewModels.
+- `data` contains Room entities and DAO, Retrofit API and DTOs, mappers, the repository
+  and the theme settings storage.
+- `di` contains Koin modules: network, database, settings, repository, use cases, ViewModels.
 
 ### Local and remote ads
 
@@ -94,6 +98,7 @@ app/src/main/java/com/example/adboardapp
 │   ├── local        Room entities, DAO, database
 │   ├── mapper       DTO and entity mappers
 │   ├── remote       Retrofit API and DTOs
+│   ├── settings     theme preference
 │   └── AdRepositoryImpl.kt
 ├── di               Koin modules
 ├── domain           repository contract and use cases
