@@ -7,6 +7,19 @@ import com.example.adboardapp.model.adCities
 // How many photos one ad can have
 const val MAX_PHOTOS = 5
 
+// Validation errors of the form, resolved to strings on the screen
+enum class FieldError {
+    TITLE_SHORT,
+    TITLE_LONG,
+    DESCRIPTION_SHORT,
+    DESCRIPTION_LONG,
+    PRICE_REQUIRED,
+    PRICE_POSITIVE,
+    PRICE_TOO_HIGH,
+    PHONE_INVALID,
+    PHOTO_REQUIRED
+}
+
 // State of the create / edit form
 data class AdEditUiState(
     val isNew: Boolean = true,
@@ -21,11 +34,11 @@ data class AdEditUiState(
     val condition: AdCondition = AdCondition.USED,
     val phone: String = "",
     val imageUrls: List<String> = emptyList(),
-    val titleError: String? = null,
-    val descriptionError: String? = null,
-    val priceError: String? = null,
-    val phoneError: String? = null,
-    val imageError: String? = null,
+    val titleError: FieldError? = null,
+    val descriptionError: FieldError? = null,
+    val priceError: FieldError? = null,
+    val phoneError: FieldError? = null,
+    val imageError: FieldError? = null,
     val saveError: String? = null,
     val isSaved: Boolean = false
 ) {

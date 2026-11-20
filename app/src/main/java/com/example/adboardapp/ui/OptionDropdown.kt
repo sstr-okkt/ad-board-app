@@ -15,17 +15,24 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 
-// Read-only dropdown used for category and city
+// One option of a dropdown: the stored value and its localized label
+internal data class LabeledOption(
+    val value: String,
+    val label: String
+)
+
+// Read-only dropdown used for categories and cities
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun OptionDropdown(
     label: String,
-    options: List<String>,
-    selected: String,
+    options: List<LabeledOption>,
+    selectedValue: String,
     onSelect: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     var expanded by remember { mutableStateOf(false) }
+    val selectedLabel = options.firstOrNull { it.value == selectedValue }?.label.orEmpty()
 
     ExposedDropdownMenuBox(
         expanded = expanded,
@@ -33,7 +40,7 @@ internal fun OptionDropdown(
         modifier = modifier
     ) {
         OutlinedTextField(
-            value = selected,
+            value = selectedLabel,
             onValueChange = {},
             readOnly = true,
             label = { Text(label) },
@@ -50,9 +57,9 @@ internal fun OptionDropdown(
         ) {
             options.forEach { option ->
                 DropdownMenuItem(
-                    text = { Text(option) },
+                    text = { Text(option.label) },
                     onClick = {
-                        onSelect(option)
+                        onSelect(option.value)
                         expanded = false
                     }
                 )

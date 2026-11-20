@@ -1,0 +1,134 @@
+<resources>
+    <string name="app_name">AdBoard</string>
+
+    <!-- Common -->
+    <string name="currency_uah">UAH</string>
+    <string name="date_today">Today</string>
+    <string name="date_yesterday">Yesterday</string>
+    <string name="date_draft">draft</string>
+    <string name="photo_missing">no photo</string>
+    <string name="back">← Back</string>
+    <string name="cancel">Cancel</string>
+    <string name="delete">Delete</string>
+    <string name="edit">Edit</string>
+    <string name="share">Share</string>
+    <string name="share_chooser">Share this ad</string>
+    <string name="show_phone">Show phone</string>
+    <string name="negotiable">Negotiable</string>
+    <string name="rating_format">Rating: %1$s out of 5.0</string>
+    <string name="seller">Seller</string>
+    <string name="you">You</string>
+    <string name="description_label">Description</string>
+    <string name="category_label">Category</string>
+    <string name="condition_label">Condition</string>
+    <string name="city_label">City</string>
+    <string name="published_label">Published</string>
+    <string name="views_label">Views</string>
+    <string name="ad_screen_title">Ad</string>
+    <string name="ad_not_found">Ad not found</string>
+    <string name="try_again">Try again</string>
+    <string name="delete_ad_title">Delete this ad?</string>
+    <string name="delete_ad_text">This action cannot be undone.</string>
+
+    <!-- Ad list -->
+    <string name="board_title">Ad board</string>
+    <string name="add">Add</string>
+    <string name="search">Search</string>
+    <string name="search_placeholder">Title, description or city</string>
+    <string name="offline_banner">No connection. Showing saved data</string>
+    <string name="retry">Retry</string>
+    <string name="found_count">Found %1$d of %2$d</string>
+    <string name="filters">Filters</string>
+    <string name="filters_with_count">Filters (%1$d)</string>
+    <string name="all">All</string>
+    <string name="nothing_found">Nothing found</string>
+    <string name="filtered_hint">Try changing the query or filters</string>
+    <string name="no_ads">No ads on the board yet</string>
+    <string name="post_ad">Post an ad</string>
+    <string name="sort_newest">Newest</string>
+    <string name="sort_cheapest">Cheapest</string>
+    <string name="sort_expensive">Most expensive</string>
+
+    <!-- Filters -->
+    <string name="filters_title">Filters</string>
+    <string name="all_cities">All cities</string>
+    <string name="price_label">Price, UAH</string>
+    <string name="price_from">From</string>
+    <string name="price_to">To</string>
+    <string name="only_with_photo">Photos only</string>
+    <string name="reset">Reset</string>
+    <string name="show_count">Show %1$d</string>
+
+    <!-- Condition -->
+    <string name="condition_new">New</string>
+    <string name="condition_used">Used</string>
+
+    <!-- Status -->
+    <string name="status_published">Published</string>
+    <string name="status_draft">Draft</string>
+    <string name="status_archived">Archived</string>
+
+    <!-- Ad form -->
+    <string name="new_ad">New ad</string>
+    <string name="edit_ad">Edit ad</string>
+    <string name="photos_up_to">Photos (up to %1$d)</string>
+    <string name="title_label">Title</string>
+    <string name="phone_label">Contact phone</string>
+    <string name="save_draft">Save draft</string>
+    <string name="publish">Publish</string>
+
+    <!-- Validation -->
+    <string name="error_title_short">At least 5 characters</string>
+    <string name="error_title_long">At most 60 characters</string>
+    <string name="error_description_short">At least 20 characters</string>
+    <string name="error_description_long">At most 2000 characters</string>
+    <string name="error_price_required">Enter a price</string>
+    <string name="error_price_positive">Price must be greater than 0</string>
+    <string name="error_price_too_high">Price is too high</string>
+    <string name="error_phone">Enter a phone, for example +380671234567</string>
+    <string name="error_photo">Add at least one photo</string>
+
+    <!-- My ads -->
+    <string name="my_ads_title">My ads</string>
+    <string name="tab_active">Active</string>
+    <string name="tab_drafts">Drafts</string>
+    <string name="tab_archived">Archive</string>
+    <string name="action_publish">Publish</string>
+    <string name="action_edit">Edit</string>
+    <string name="action_archive">Unpublish</string>
+    <string name="action_delete">Delete</string>
+    <string name="empty_active">No active ads</string>
+    <string name="empty_drafts">No drafts</string>
+    <string name="empty_archive">Archive is empty</string>
+    <string name="empty_hint">Create an ad so others can see it</string>
+
+    <!-- Favorites -->
+    <string name="favorites_title">Favorites</string>
+    <string name="favorites_empty">No favorite ads</string>
+    <string name="favorites_hint">Tap ♥ on a card to save an ad</string>
+
+    <!-- Settings -->
+    <string name="settings_title">Settings</string>
+    <string name="language_section">Language</string>
+    <string name="language_ukrainian">Українська</string>
+    <string name="language_english">English</string>
+    <string name="appearance_section">Appearance</string>
+    <string name="theme_system">System</string>
+    <string name="theme_light">Light</string>
+    <string name="theme_dark">Dark</string>
+    <string name="theme_system_desc">Same as system</string>
+    <string name="theme_light_desc">Light gray colors</string>
+    <string name="theme_dark_desc">Dark colors</string>
+
+    <!-- Bottom navigation -->
+    <string name="nav_search">Search</string>
+    <string name="nav_my">My ads</string>
+    <string name="nav_favorites">Favorites</string>
+    <string name="nav_settings">Settings</string>
+
+    <!-- View counter -->
+    <plurals name="views">
+        <item quantity="one">%d view</item>
+        <item quantity="other">%d views</item>
+    </plurals>
+</resources>

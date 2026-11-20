@@ -133,28 +133,28 @@ class AdEditViewModel(
 
         return state.copy(
             titleError = when {
-                title.length < 5 -> "Мінімум 5 символів"
-                title.length > 60 -> "Максимум 60 символів"
+                title.length < 5 -> FieldError.TITLE_SHORT
+                title.length > 60 -> FieldError.TITLE_LONG
                 else -> null
             },
             descriptionError = when {
-                description.length < 20 -> "Мінімум 20 символів"
-                description.length > 2000 -> "Максимум 2000 символів"
+                description.length < 20 -> FieldError.DESCRIPTION_SHORT
+                description.length > 2000 -> FieldError.DESCRIPTION_LONG
                 else -> null
             },
             priceError = when {
-                price == null -> "Вкажіть ціну"
-                price <= 0.0 -> "Ціна має бути більшою за 0"
-                price > 10_000_000 -> "Занадто велика ціна"
+                price == null -> FieldError.PRICE_REQUIRED
+                price <= 0.0 -> FieldError.PRICE_POSITIVE
+                price > 10_000_000 -> FieldError.PRICE_TOO_HIGH
                 else -> null
             },
             phoneError = if (digits !in 10..13) {
-                "Вкажіть телефон, наприклад +380671234567"
+                FieldError.PHONE_INVALID
             } else {
                 null
             },
             imageError = if (publish && state.imageUrls.isEmpty()) {
-                "Додайте хоча б одне фото"
+                FieldError.PHOTO_REQUIRED
             } else {
                 null
             },

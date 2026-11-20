@@ -4,6 +4,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.hasSetTextAction
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
@@ -22,8 +23,8 @@ class AdListContentTest {
     val composeRule = createComposeRule()
 
     private val ads = listOf(
-        ad(id = 1, title = "iPhone 13", price = 15000.0, category = "Смартфони"),
-        ad(id = 2, title = "Крісло офісне", price = 2300.0, category = "Меблі")
+        ad(id = 1, title = "iPhone 13", price = 15000.0, category = "smartphones"),
+        ad(id = 2, title = "Крісло офісне", price = 2300.0, category = "furniture")
     )
 
     @Test
@@ -76,9 +77,9 @@ class AdListContentTest {
             }
         }
 
-        composeRule.onNodeWithText("Меблі").performClick()
+        composeRule.onNodeWithTag("category_furniture").performClick()
 
-        assertEquals("Меблі", selected)
+        assertEquals("furniture", selected)
     }
 
     private fun ad(
@@ -92,7 +93,7 @@ class AdListContentTest {
         description = "Description",
         price = price,
         category = category,
-        city = "Київ",
+        city = "kyiv",
         condition = AdCondition.USED,
         views = 10,
         status = AdStatus.PUBLISHED,

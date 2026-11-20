@@ -1,5 +1,6 @@
 package com.example.adboardapp.ui
 
+import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
@@ -8,7 +9,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.example.adboardapp.R
 import com.example.adboardapp.model.AdStatus
 
 // Small colored badge with the ad status
@@ -20,7 +23,7 @@ internal fun StatusBadge(status: AdStatus) {
         shape = RoundedCornerShape(50)
     ) {
         Text(
-            text = statusLabel(status),
+            text = stringResource(statusRes(status)),
             color = color,
             style = MaterialTheme.typography.labelSmall,
             modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
@@ -34,8 +37,9 @@ internal fun statusColor(status: AdStatus): Color = when (status) {
     AdStatus.ARCHIVED -> Color(0xFF616161)
 }
 
-internal fun statusLabel(status: AdStatus): String = when (status) {
-    AdStatus.PUBLISHED -> "Опубліковано"
-    AdStatus.DRAFT -> "Чернетка"
-    AdStatus.ARCHIVED -> "Архів"
+@StringRes
+internal fun statusRes(status: AdStatus): Int = when (status) {
+    AdStatus.PUBLISHED -> R.string.status_published
+    AdStatus.DRAFT -> R.string.status_draft
+    AdStatus.ARCHIVED -> R.string.status_archived
 }

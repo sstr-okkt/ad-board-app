@@ -6,7 +6,7 @@ import androidx.room.RoomDatabase
 // Local database of the app
 @Database(
     entities = [AdEntity::class, AdImageEntity::class],
-    version = 2,
+    version = 3,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {

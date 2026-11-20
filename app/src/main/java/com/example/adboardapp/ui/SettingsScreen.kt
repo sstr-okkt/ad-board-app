@@ -1,5 +1,6 @@
 package com.example.adboardapp.ui
 
+import androidx.annotation.StringRes
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -25,23 +26,30 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.adboardapp.R
+import com.example.adboardapp.model.AppLanguage
 import com.example.adboardapp.model.ThemeMode
 import com.example.adboardapp.ui.theme.AdBoardAppTheme
 import org.koin.androidx.compose.koinViewModel
 
-// App settings, currently the theme choice
+// App settings: language and theme
 @Composable
 fun SettingsScreen(
-    viewModel: ThemeViewModel = koinViewModel()
+    themeViewModel: ThemeViewModel = koinViewModel(),
+    languageViewModel: LanguageViewModel = koinViewModel()
 ) {
-    val mode by viewModel.mode.collectAsStateWithLifecycle()
+    val themeMode by themeViewModel.mode.collectAsStateWithLifecycle()
+    val language by languageViewModel.language.collectAsStateWithLifecycle()
 
     SettingsContent(
-        mode = mode,
-        onModeChange = viewModel::setMode
+        themeMode = themeMode,
+        onThemeChange = themeViewModel::setMode,
+        language = language,
+        onLanguageChange = languageViewModel::setLanguage
     )
 }
 
@@ -49,14 +57,16 @@ fun SettingsScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsContent(
-    mode: ThemeMode,
-    onModeChange: (ThemeMode) -> Unit,
+    themeMode: ThemeMode,
+    onThemeChange: (ThemeMode) -> Unit,
+    language: AppLanguage,
+    onLanguageChange: (AppLanguage) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Scaffold(
         modifier = modifier.fillMaxSize(),
         topBar = {
-            TopAppBar(title = { Text("Налаштування") })
+            TopAppBar(title = { Text(stringResource(R.string.settings_title)) })
         }
     ) { innerPadding ->
         Box(
@@ -72,13 +82,33 @@ fun SettingsContent(
                     .verticalScroll(rememberScrollState())
                     .padding(16.dp)
             ) {
-                Text(
-                    text = "Оформлення",
-                    style = MaterialTheme.typography.labelLarge,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
+                SectionTitle(stringResource(R.string.language_section))
 
-                Spacer(Modifier.height(8.dp))
+                Surface(
+                    shape = RoundedCornerShape(16.dp),
+                    tonalElevation = 1.dp,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Column {
+                        AppLanguage.entries.forEachIndexed { index, option ->
+                            RadioRow(
+                                label = stringResource(languageRes(option)),
+                                description = null,
+                                selected = language == option,
+                                onClick = { onLanguageChange(option) }
+                            )
+                            if (index != AppLanguage.entries.lastIndex) {
+                                HorizontalDivider(
+                                    modifier = Modifier.padding(start = 56.dp)
+                                )
+                            }
+                        }
+                    }
+                }
+
+                Spacer(Modifier.height(20.dp))
+
+                SectionTitle(stringResource(R.string.appearance_section))
 
                 Surface(
                     shape = RoundedCornerShape(16.dp),
@@ -87,11 +117,11 @@ fun SettingsContent(
                 ) {
                     Column {
                         ThemeMode.entries.forEachIndexed { index, option ->
-                            ThemeOption(
-                                label = option.label,
-                                description = description(option),
-                                selected = mode == option,
-                                onClick = { onModeChange(option) }
+                            RadioRow(
+                                label = stringResource(themeRes(option)),
+                                description = stringResource(themeDescriptionRes(option)),
+                                selected = themeMode == option,
+                                onClick = { onThemeChange(option) }
                             )
                             if (index != ThemeMode.entries.lastIndex) {
                                 HorizontalDivider(
@@ -106,11 +136,21 @@ fun SettingsContent(
     }
 }
 
-// One row of the theme radio group
 @Composable
-private fun ThemeOption(
+private fun SectionTitle(text: String) {
+    Text(
+        text = text,
+        style = MaterialTheme.typography.labelLarge,
+        color = MaterialTheme.colorScheme.onSurfaceVariant
+    )
+    Spacer(Modifier.height(8.dp))
+}
+
+// One row of a radio group
+@Composable
+private fun RadioRow(
     label: String,
-    description: String,
+    description: String?,
     selected: Boolean,
     onClick: () -> Unit
 ) {
@@ -127,19 +167,35 @@ private fun ThemeOption(
                 text = label,
                 style = MaterialTheme.typography.bodyLarge
             )
-            Text(
-                text = description,
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
+            if (description != null) {
+                Text(
+                    text = description,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
         }
     }
 }
 
-private fun description(mode: ThemeMode): String = when (mode) {
-    ThemeMode.SYSTEM -> "Як у системі"
-    ThemeMode.LIGHT -> "Світло-сірі кольори"
-    ThemeMode.DARK -> "Темні кольори"
+@StringRes
+private fun languageRes(language: AppLanguage): Int = when (language) {
+    AppLanguage.UKRAINIAN -> R.string.language_ukrainian
+    AppLanguage.ENGLISH -> R.string.language_english
+}
+
+@StringRes
+internal fun themeRes(theme: ThemeMode): Int = when (theme) {
+    ThemeMode.SYSTEM -> R.string.theme_system
+    ThemeMode.LIGHT -> R.string.theme_light
+    ThemeMode.DARK -> R.string.theme_dark
+}
+
+@StringRes
+private fun themeDescriptionRes(theme: ThemeMode): Int = when (theme) {
+    ThemeMode.SYSTEM -> R.string.theme_system_desc
+    ThemeMode.LIGHT -> R.string.theme_light_desc
+    ThemeMode.DARK -> R.string.theme_dark_desc
 }
 
 @Preview(showBackground = true)
@@ -147,8 +203,10 @@ private fun description(mode: ThemeMode): String = when (mode) {
 private fun SettingsContentPreview() {
     AdBoardAppTheme {
         SettingsContent(
-            mode = ThemeMode.SYSTEM,
-            onModeChange = {}
+            themeMode = ThemeMode.SYSTEM,
+            onThemeChange = {},
+            language = AppLanguage.UKRAINIAN,
+            onLanguageChange = {}
         )
     }
 }

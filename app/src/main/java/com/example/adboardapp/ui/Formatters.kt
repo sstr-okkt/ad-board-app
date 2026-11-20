@@ -1,36 +1,33 @@
 package com.example.adboardapp.ui
 
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.res.pluralStringResource
+import androidx.compose.ui.res.stringResource
+import com.example.adboardapp.R
 import java.time.LocalDate
-
-private val months = listOf(
-    "січня", "лютого", "березня", "квітня", "травня", "червня",
-    "липня", "серпня", "вересня", "жовтня", "листопада", "грудня"
-)
+import java.time.format.DateTimeFormatter
 
 // Shows the date the way a board does: today, yesterday or a short date
-internal fun formatPublishedAt(raw: String?): String {
-    if (raw.isNullOrBlank()) return "чернетка"
+@Composable
+internal fun publishedAtLabel(raw: String?): String {
+    if (raw.isNullOrBlank()) return stringResource(R.string.date_draft)
 
     val date = runCatching { LocalDate.parse(raw) }.getOrNull() ?: return raw
     val today = LocalDate.now()
 
     return when {
-        date == today -> "Сьогодні"
-        date == today.minusDays(1) -> "Вчора"
-        date.year == today.year -> "${date.dayOfMonth} ${months[date.monthValue - 1]}"
-        else -> "${date.dayOfMonth} ${months[date.monthValue - 1]} ${date.year}"
+        date == today -> stringResource(R.string.date_today)
+        date == today.minusDays(1) -> stringResource(R.string.date_yesterday)
+        else -> {
+            val locale = LocalConfiguration.current.locales[0]
+            val pattern = if (date.year == today.year) "d MMMM" else "d MMMM yyyy"
+            date.format(DateTimeFormatter.ofPattern(pattern, locale))
+        }
     }
 }
 
-// Correct Ukrainian plural for the views counter
-internal fun viewsLabel(views: Int): String {
-    val lastTwo = views % 100
-    val last = views % 10
-    val word = when {
-        lastTwo in 11..14 -> "переглядів"
-        last == 1 -> "перегляд"
-        last in 2..4 -> "перегляди"
-        else -> "переглядів"
-    }
-    return "$views $word"
-}
+// Localized views counter with the correct plural form
+@Composable
+internal fun viewsLabel(views: Int): String =
+    pluralStringResource(R.plurals.views, views, views)

@@ -5,6 +5,7 @@ import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.StringRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -52,6 +53,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
@@ -59,10 +61,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
+import com.example.adboardapp.R
 import com.example.adboardapp.model.AdCondition
 import com.example.adboardapp.model.adCategories
 import com.example.adboardapp.model.adCities
-import com.example.adboardapp.model.label
 import com.example.adboardapp.ui.theme.AdBoardAppTheme
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -145,11 +147,15 @@ fun AdEditContent(
         topBar = {
             TopAppBar(
                 title = {
-                    Text(if (state.isNew) "Нове оголошення" else "Редагування")
+                    Text(
+                        stringResource(
+                            if (state.isNew) R.string.new_ad else R.string.edit_ad
+                        )
+                    )
                 },
                 navigationIcon = {
                     TextButton(onClick = onBack) {
-                        Text("← Назад")
+                        Text(stringResource(R.string.back))
                     }
                 }
             )
@@ -193,7 +199,7 @@ fun AdEditContent(
                         .padding(16.dp)
                 ) {
                     Text(
-                        text = "Фото (до $MAX_PHOTOS)",
+                        text = stringResource(R.string.photos_up_to, MAX_PHOTOS),
                         style = MaterialTheme.typography.labelLarge,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -209,7 +215,7 @@ fun AdEditContent(
 
                     if (state.imageError != null) {
                         Text(
-                            text = state.imageError,
+                            text = stringResource(fieldErrorRes(state.imageError)),
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.error,
                             modifier = Modifier.padding(top = 4.dp)
@@ -221,7 +227,7 @@ fun AdEditContent(
                     FormField(
                         value = state.title,
                         onValueChange = onTitleChange,
-                        label = "Заголовок",
+                        label = stringResource(R.string.title_label),
                         error = state.titleError
                     )
 
@@ -230,7 +236,7 @@ fun AdEditContent(
                     FormField(
                         value = state.description,
                         onValueChange = onDescriptionChange,
-                        label = "Опис",
+                        label = stringResource(R.string.description_label),
                         error = state.descriptionError,
                         minLines = 3
                     )
@@ -240,7 +246,7 @@ fun AdEditContent(
                     FormField(
                         value = state.price,
                         onValueChange = onPriceChange,
-                        label = "Ціна, грн",
+                        label = stringResource(R.string.price_label),
                         error = state.priceError,
                         keyboardType = KeyboardType.Number
                     )
@@ -250,23 +256,27 @@ fun AdEditContent(
                             checked = state.isNegotiable,
                             onCheckedChange = onNegotiableChange
                         )
-                        Text("Договірна")
+                        Text(stringResource(R.string.negotiable))
                     }
 
                     Spacer(Modifier.height(8.dp))
 
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                         OptionDropdown(
-                            label = "Категорія",
-                            options = adCategories,
-                            selected = state.category,
+                            label = stringResource(R.string.category_label),
+                            options = adCategories.map { key ->
+                                LabeledOption(value = key, label = categoryLabel(key))
+                            },
+                            selectedValue = state.category,
                             onSelect = onCategoryChange,
                             modifier = Modifier.weight(1f)
                         )
                         OptionDropdown(
-                            label = "Місто",
-                            options = adCities,
-                            selected = state.city,
+                            label = stringResource(R.string.city_label),
+                            options = adCities.map { key ->
+                                LabeledOption(value = key, label = cityLabel(key))
+                            },
+                            selectedValue = state.city,
                             onSelect = onCityChange,
                             modifier = Modifier.weight(1f)
                         )
@@ -275,7 +285,7 @@ fun AdEditContent(
                     Spacer(Modifier.height(12.dp))
 
                     Text(
-                        text = "Стан",
+                        text = stringResource(R.string.condition_label),
                         style = MaterialTheme.typography.labelLarge,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -285,7 +295,7 @@ fun AdEditContent(
                             FilterChip(
                                 selected = state.condition == condition,
                                 onClick = { onConditionChange(condition) },
-                                label = { Text(condition.label()) }
+                                label = { Text(stringResource(conditionRes(condition))) }
                             )
                         }
                     }
@@ -295,7 +305,7 @@ fun AdEditContent(
                     FormField(
                         value = state.phone,
                         onValueChange = onPhoneChange,
-                        label = "Контактний телефон",
+                        label = stringResource(R.string.phone_label),
                         error = state.phoneError,
                         keyboardType = KeyboardType.Phone
                     )
@@ -316,13 +326,13 @@ fun AdEditContent(
                             onClick = onSaveDraft,
                             modifier = Modifier.weight(1f)
                         ) {
-                            Text("Зберегти чернетку")
+                            Text(stringResource(R.string.save_draft))
                         }
                         Button(
                             onClick = onPublish,
                             modifier = Modifier.weight(1f)
                         ) {
-                            Text("Опублікувати")
+                            Text(stringResource(R.string.publish))
                         }
                     }
 
@@ -391,7 +401,7 @@ private fun FormField(
     value: String,
     onValueChange: (String) -> Unit,
     label: String,
-    error: String?,
+    error: FieldError?,
     modifier: Modifier = Modifier,
     minLines: Int = 1,
     keyboardType: KeyboardType = KeyboardType.Text
@@ -402,7 +412,7 @@ private fun FormField(
         label = { Text(label) },
         isError = error != null,
         supportingText = if (error != null) {
-            { Text(error) }
+            { Text(stringResource(fieldErrorRes(error))) }
         } else {
             null
         },
@@ -410,6 +420,19 @@ private fun FormField(
         keyboardOptions = KeyboardOptions(keyboardType = keyboardType),
         modifier = modifier.fillMaxWidth()
     )
+}
+
+@StringRes
+private fun fieldErrorRes(error: FieldError): Int = when (error) {
+    FieldError.TITLE_SHORT -> R.string.error_title_short
+    FieldError.TITLE_LONG -> R.string.error_title_long
+    FieldError.DESCRIPTION_SHORT -> R.string.error_description_short
+    FieldError.DESCRIPTION_LONG -> R.string.error_description_long
+    FieldError.PRICE_REQUIRED -> R.string.error_price_required
+    FieldError.PRICE_POSITIVE -> R.string.error_price_positive
+    FieldError.PRICE_TOO_HIGH -> R.string.error_price_too_high
+    FieldError.PHONE_INVALID -> R.string.error_phone
+    FieldError.PHOTO_REQUIRED -> R.string.error_photo
 }
 
 // Copies the picked image into the app storage, so it survives restarts

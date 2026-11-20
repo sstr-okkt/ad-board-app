@@ -15,6 +15,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -22,6 +23,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.example.adboardapp.R
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -137,25 +139,25 @@ private fun BottomBar(
             selected = currentRoute == LIST_ROUTE,
             onClick = { onSelect(LIST_ROUTE) },
             icon = { Icon(Icons.Filled.Search, contentDescription = null) },
-            label = { Text("Пошук") }
+            label = { Text(stringResource(R.string.nav_search)) }
         )
         NavigationBarItem(
             selected = currentRoute == MY_ROUTE,
             onClick = { onSelect(MY_ROUTE) },
             icon = { Icon(Icons.Filled.Person, contentDescription = null) },
-            label = { Text("Мої") }
+            label = { Text(stringResource(R.string.nav_my)) }
         )
         NavigationBarItem(
             selected = currentRoute == FAVORITES_ROUTE,
             onClick = { onSelect(FAVORITES_ROUTE) },
             icon = { Icon(Icons.Filled.Favorite, contentDescription = null) },
-            label = { Text("Обране") }
+            label = { Text(stringResource(R.string.nav_favorites)) }
         )
         NavigationBarItem(
             selected = currentRoute == SETTINGS_ROUTE,
             onClick = { onSelect(SETTINGS_ROUTE) },
             icon = { Icon(Icons.Filled.Settings, contentDescription = null) },
-            label = { Text("Налаштування") }
+            label = { Text(stringResource(R.string.nav_settings)) }
         )
     }
 }

@@ -42,6 +42,8 @@ because Room is the single source of truth.
 - Offline-first: the cached list stays available, a banner explains the missing connection,
   and user ads are never overwritten by a network refresh.
 - Light and dark themes with a System / Light / Dark switch in Settings, saved between launches.
+- Ukrainian and English interface with a language switch in Settings; categories and cities
+  are stored as language-neutral keys and translated on the screen.
 - Dependency injection with Koin.
 
 ## Tech stack

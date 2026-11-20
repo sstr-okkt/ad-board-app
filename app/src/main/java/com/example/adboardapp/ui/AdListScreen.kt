@@ -1,5 +1,6 @@
 package com.example.adboardapp.ui
 
+import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -43,13 +44,15 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.adboardapp.R
 import com.example.adboardapp.model.Ad
 import com.example.adboardapp.model.AdCondition
-import com.example.adboardapp.model.label
 import com.example.adboardapp.ui.theme.AdBoardAppTheme
 import org.koin.androidx.compose.koinViewModel
 
@@ -96,10 +99,10 @@ fun AdListContent(
         modifier = modifier.fillMaxSize(),
         topBar = {
             TopAppBar(
-                title = { Text("Дошка оголошень") },
+                title = { Text(stringResource(R.string.board_title)) },
                 actions = {
                     TextButton(onClick = onAddClick) {
-                        Text("Додати")
+                        Text(stringResource(R.string.add))
                     }
                 }
             )
@@ -125,8 +128,8 @@ fun AdListContent(
                 OutlinedTextField(
                     value = uiState.query,
                     onValueChange = onQueryChange,
-                    label = { Text("Пошук") },
-                    placeholder = { Text("Назва, опис або місто") },
+                    label = { Text(stringResource(R.string.search)) },
+                    placeholder = { Text(stringResource(R.string.search_placeholder)) },
                     singleLine = true,
                     modifier = Modifier
                         .fillMaxWidth()
@@ -145,13 +148,13 @@ fun AdListContent(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Text(
-                                text = "Немає з'єднання. Показано збережені дані",
+                                text = stringResource(R.string.offline_banner),
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onErrorContainer,
                                 modifier = Modifier.weight(1f)
                             )
                             TextButton(onClick = onRetry) {
-                                Text("Повторити")
+                                Text(stringResource(R.string.retry))
                             }
                         }
                     }
@@ -171,7 +174,11 @@ fun AdListContent(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
-                            text = "Знайдено ${uiState.visibleAds.size} із ${uiState.ads.size}",
+                            text = stringResource(
+                                R.string.found_count,
+                                uiState.visibleAds.size,
+                                uiState.ads.size
+                            ),
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier.weight(1f)
@@ -179,9 +186,12 @@ fun AdListContent(
                         TextButton(onClick = { showFilters = true }) {
                             Text(
                                 text = if (uiState.hasActiveFilters) {
-                                    "Фільтри (${uiState.activeFilterCount})"
+                                    stringResource(
+                                        R.string.filters_with_count,
+                                        uiState.activeFilterCount
+                                    )
                                 } else {
-                                    "Фільтри"
+                                    stringResource(R.string.filters)
                                 },
                                 style = MaterialTheme.typography.bodySmall
                             )
@@ -250,6 +260,12 @@ private fun FiltersSheet(
     var draft by remember { mutableStateOf(initial) }
     val result = normalized(draft)
 
+    val cityOptions = listOf(
+        LabeledOption(value = "", label = stringResource(R.string.all_cities))
+    ) + cities.map { key ->
+        LabeledOption(value = key, label = cityLabel(key))
+    }
+
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         sheetState = sheetState
@@ -261,25 +277,25 @@ private fun FiltersSheet(
                 .navigationBarsPadding()
         ) {
             Text(
-                text = "Фільтри",
+                text = stringResource(R.string.filters_title),
                 style = MaterialTheme.typography.titleLarge
             )
 
             Spacer(Modifier.height(12.dp))
 
             OptionDropdown(
-                label = "Місто",
-                options = listOf(ALL_CITIES) + cities,
-                selected = draft.city ?: ALL_CITIES,
+                label = stringResource(R.string.city_label),
+                options = cityOptions,
+                selectedValue = draft.city ?: "",
                 onSelect = { value ->
-                    draft = draft.copy(city = value.takeUnless { it == ALL_CITIES })
+                    draft = draft.copy(city = value.takeUnless { it.isEmpty() })
                 }
             )
 
             Spacer(Modifier.height(12.dp))
 
             Text(
-                text = "Ціна, грн",
+                text = stringResource(R.string.price_label),
                 style = MaterialTheme.typography.labelLarge,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -288,13 +304,13 @@ private fun FiltersSheet(
 
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 PriceField(
-                    label = "Від",
+                    label = stringResource(R.string.price_from),
                     value = draft.minPrice,
                     modifier = Modifier.weight(1f),
                     onValueChange = { draft = draft.copy(minPrice = it) }
                 )
                 PriceField(
-                    label = "До",
+                    label = stringResource(R.string.price_to),
                     value = draft.maxPrice,
                     modifier = Modifier.weight(1f),
                     onValueChange = { draft = draft.copy(maxPrice = it) }
@@ -304,7 +320,7 @@ private fun FiltersSheet(
             Spacer(Modifier.height(12.dp))
 
             Text(
-                text = "Стан",
+                text = stringResource(R.string.condition_label),
                 style = MaterialTheme.typography.labelLarge,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -313,13 +329,13 @@ private fun FiltersSheet(
                 FilterChip(
                     selected = draft.condition == null,
                     onClick = { draft = draft.copy(condition = null) },
-                    label = { Text("Усі") }
+                    label = { Text(stringResource(R.string.all)) }
                 )
                 AdCondition.entries.forEach { condition ->
                     FilterChip(
                         selected = draft.condition == condition,
                         onClick = { draft = draft.copy(condition = condition) },
-                        label = { Text(condition.label()) }
+                        label = { Text(stringResource(conditionRes(condition))) }
                     )
                 }
             }
@@ -329,7 +345,7 @@ private fun FiltersSheet(
                     checked = draft.onlyWithPhoto,
                     onCheckedChange = { draft = draft.copy(onlyWithPhoto = it) }
                 )
-                Text("Тільки з фото")
+                Text(stringResource(R.string.only_with_photo))
             }
 
             Spacer(Modifier.height(16.dp))
@@ -339,7 +355,7 @@ private fun FiltersSheet(
                     onClick = { draft = AdFilters() },
                     modifier = Modifier.weight(1f)
                 ) {
-                    Text("Скинути")
+                    Text(stringResource(R.string.reset))
                 }
                 Button(
                     onClick = {
@@ -348,7 +364,7 @@ private fun FiltersSheet(
                     },
                     modifier = Modifier.weight(1f)
                 ) {
-                    Text("Показати ${resultCount(result)}")
+                    Text(stringResource(R.string.show_count, resultCount(result)))
                 }
             }
 
@@ -390,8 +406,6 @@ private fun normalized(filters: AdFilters): AdFilters {
     }
 }
 
-private const val ALL_CITIES = "Усі міста"
-
 // Horizontal list of category filters
 @Composable
 private fun CategoryChips(
@@ -399,6 +413,10 @@ private fun CategoryChips(
     selected: String?,
     onSelect: (String?) -> Unit
 ) {
+    val options = categories
+        .map { key -> key to categoryLabel(key) }
+        .sortedBy { it.second }
+
     LazyRow(
         modifier = Modifier.fillMaxWidth(),
         contentPadding = PaddingValues(horizontal = 16.dp),
@@ -408,14 +426,16 @@ private fun CategoryChips(
             FilterChip(
                 selected = selected == null,
                 onClick = { onSelect(null) },
-                label = { Text("Усі") }
+                label = { Text(stringResource(R.string.all)) },
+                modifier = Modifier.testTag("category_all")
             )
         }
-        items(categories) { category ->
+        items(options) { (key, label) ->
             FilterChip(
-                selected = selected == category,
-                onClick = { onSelect(category) },
-                label = { Text(category) }
+                selected = selected == key,
+                onClick = { onSelect(key) },
+                label = { Text(label) },
+                modifier = Modifier.testTag("category_$key")
             )
         }
     }
@@ -432,7 +452,7 @@ private fun SortMenu(
     Box {
         TextButton(onClick = { expanded = true }) {
             Text(
-                text = "${sort.label} ▾",
+                text = "${stringResource(sortRes(sort))} ▾",
                 style = MaterialTheme.typography.bodySmall
             )
         }
@@ -442,7 +462,7 @@ private fun SortMenu(
         ) {
             AdSort.entries.forEach { option ->
                 DropdownMenuItem(
-                    text = { Text(option.label) },
+                    text = { Text(stringResource(sortRes(option))) },
                     onClick = {
                         onSortChange(option)
                         expanded = false
@@ -470,23 +490,38 @@ private fun EmptyState(
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Text(
-                text = if (isFiltered) "Нічого не знайдено" else "На дошці ще немає оголошень",
+                text = stringResource(
+                    if (isFiltered) R.string.nothing_found else R.string.no_ads
+                ),
                 style = MaterialTheme.typography.titleMedium
             )
             Spacer(Modifier.height(8.dp))
             if (isFiltered) {
                 Text(
-                    text = "Спробуйте змінити запит або фільтри",
+                    text = stringResource(R.string.filtered_hint),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             } else {
                 Button(onClick = onAddClick) {
-                    Text("Подати оголошення")
+                    Text(stringResource(R.string.post_ad))
                 }
             }
         }
     }
+}
+
+@StringRes
+internal fun sortRes(sort: AdSort): Int = when (sort) {
+    AdSort.NEWEST -> R.string.sort_newest
+    AdSort.CHEAPEST -> R.string.sort_cheapest
+    AdSort.EXPENSIVE -> R.string.sort_expensive
+}
+
+@StringRes
+internal fun conditionRes(condition: AdCondition): Int = when (condition) {
+    AdCondition.NEW -> R.string.condition_new
+    AdCondition.USED -> R.string.condition_used
 }
 
 @Preview(showBackground = true)

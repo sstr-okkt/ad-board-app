@@ -10,6 +10,7 @@ import com.example.adboardapp.model.AdSource
 import com.example.adboardapp.model.AdStatus
 import com.example.adboardapp.model.Author
 import com.example.adboardapp.model.adCities
+import com.example.adboardapp.model.categoryKeyFromApi
 import java.time.LocalDate
 import kotlin.math.roundToInt
 
@@ -31,7 +32,7 @@ fun ProductDto.toEntity(): AdEntity {
         description = descriptionFor(this, isNew, city),
         price = (price * 41).roundToInt().toDouble(), // rough USD to UAH for the demo
         isNegotiable = id % 4 == 0,
-        category = categoryLabel(category),
+        category = categoryKeyFromApi(category),
         city = city,
         condition = if (isNew) AdCondition.NEW.name else AdCondition.USED.name,
         views = stock * 7 + id * 13,
@@ -115,28 +116,4 @@ private fun phoneFor(id: Int): String {
     val operator = listOf("67", "50", "63", "93", "96", "68")[id % 6]
     val tail = (id * 123457 % 10_000_000).toString().padStart(7, '0')
     return "+380$operator$tail"
-}
-
-// Turns API category names into readable labels
-private fun categoryLabel(raw: String): String = when (raw) {
-    "beauty" -> "Краса"
-    "fragrances" -> "Парфуми"
-    "furniture" -> "Меблі"
-    "groceries" -> "Продукти"
-    "home-decoration" -> "Декор"
-    "kitchen-accessories" -> "Кухня"
-    "laptops" -> "Ноутбуки"
-    "mens-shirts" -> "Одяг"
-    "mens-shoes" -> "Взуття"
-    "mens-watches" -> "Годинники"
-    "mobile-accessories" -> "Аксесуари"
-    "smartphones" -> "Смартфони"
-    "sports-accessories" -> "Спорт"
-    "sunglasses" -> "Окуляри"
-    "tablets" -> "Планшети"
-    "womens-bags" -> "Сумки"
-    "womens-dresses" -> "Сукні"
-    "womens-shoes" -> "Взуття"
-    "womens-watches" -> "Годинники"
-    else -> raw.replaceFirstChar { it.uppercase() }
 }

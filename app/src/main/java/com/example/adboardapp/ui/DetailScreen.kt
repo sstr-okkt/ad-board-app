@@ -46,12 +46,14 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
+import com.example.adboardapp.R
 import com.example.adboardapp.model.Ad
 import com.example.adboardapp.model.AdCondition
 import com.example.adboardapp.ui.theme.AdBoardAppTheme
@@ -98,8 +100,8 @@ fun DetailContent(
     if (showDeleteDialog) {
         AlertDialog(
             onDismissRequest = { showDeleteDialog = false },
-            title = { Text("Видалити оголошення?") },
-            text = { Text("Дію не можна скасувати.") },
+            title = { Text(stringResource(R.string.delete_ad_title)) },
+            text = { Text(stringResource(R.string.delete_ad_text)) },
             confirmButton = {
                 TextButton(
                     onClick = {
@@ -107,12 +109,12 @@ fun DetailContent(
                         onDeleteConfirmed()
                     }
                 ) {
-                    Text("Видалити")
+                    Text(stringResource(R.string.delete))
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showDeleteDialog = false }) {
-                    Text("Скасувати")
+                    Text(stringResource(R.string.cancel))
                 }
             }
         )
@@ -122,10 +124,10 @@ fun DetailContent(
         modifier = modifier.fillMaxSize(),
         topBar = {
             TopAppBar(
-                title = { Text("Оголошення") },
+                title = { Text(stringResource(R.string.ad_screen_title)) },
                 navigationIcon = {
                     TextButton(onClick = onBack) {
-                        Text("← Назад")
+                        Text(stringResource(R.string.back))
                     }
                 },
                 actions = {
@@ -170,7 +172,7 @@ fun DetailContent(
                     )
                     Spacer(Modifier.height(12.dp))
                     Button(onClick = onRetry) {
-                        Text("Спробувати ще раз")
+                        Text(stringResource(R.string.try_again))
                     }
                 }
             }
@@ -182,7 +184,7 @@ fun DetailContent(
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text = "Оголошення не знайдено",
+                    text = stringResource(R.string.ad_not_found),
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
@@ -212,6 +214,9 @@ private fun DetailBody(
 ) {
     val context = LocalContext.current
     var phoneVisible by rememberSaveable(ad.id) { mutableStateOf(false) }
+    val currency = stringResource(R.string.currency_uah)
+    val shareChooserTitle = stringResource(R.string.share_chooser)
+    val city = cityLabel(ad.city)
 
     Column(
         modifier = Modifier
@@ -246,7 +251,7 @@ private fun DetailBody(
 
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(
-                text = ad.formattedPrice(),
+                text = ad.formattedPrice(currency),
                 style = MaterialTheme.typography.headlineMedium,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.primary
@@ -258,7 +263,7 @@ private fun DetailBody(
                     shape = RoundedCornerShape(50)
                 ) {
                     Text(
-                        text = "Договірна",
+                        text = stringResource(R.string.negotiable),
                         style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.colorScheme.onSecondaryContainer,
                         modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp)
@@ -269,18 +274,18 @@ private fun DetailBody(
 
         Spacer(Modifier.height(16.dp))
 
-        InfoRow(label = "Категорія", value = ad.category)
-        InfoRow(label = "Стан", value = conditionLabel(ad.condition))
-        InfoRow(label = "Місто", value = ad.city)
-        InfoRow(label = "Опубліковано", value = formatPublishedAt(ad.publishedAt))
-        InfoRow(label = "Перегляди", value = viewsLabel(ad.views))
+        InfoRow(label = stringResource(R.string.category_label), value = categoryLabel(ad.category))
+        InfoRow(label = stringResource(R.string.condition_label), value = stringResource(conditionRes(ad.condition)))
+        InfoRow(label = stringResource(R.string.city_label), value = cityLabel(ad.city))
+        InfoRow(label = stringResource(R.string.published_label), value = publishedAtLabel(ad.publishedAt))
+        InfoRow(label = stringResource(R.string.views_label), value = viewsLabel(ad.views))
 
         if (ad.description.isNotBlank()) {
             Spacer(Modifier.height(8.dp))
             HorizontalDivider()
             Spacer(Modifier.height(16.dp))
             Text(
-                text = "Опис",
+                text = stringResource(R.string.description_label),
                 style = MaterialTheme.typography.labelLarge,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -311,15 +316,23 @@ private fun DetailBody(
                         onClick = { phoneVisible = true },
                         modifier = Modifier.weight(1f)
                     ) {
-                        Text("Показати телефон")
+                        Text(stringResource(R.string.show_phone))
                     }
                 }
             }
             OutlinedButton(
-                onClick = { shareAd(context, ad) },
+                onClick = {
+                    shareAd(
+                        context = context,
+                        ad = ad,
+                        currency = currency,
+                        city = city,
+                        chooserTitle = shareChooserTitle
+                    )
+                },
                 modifier = Modifier.weight(1f)
             ) {
-                Text("Поділитися")
+                Text(stringResource(R.string.share))
             }
         }
 
@@ -331,13 +344,13 @@ private fun DetailBody(
                     onClick = onEdit,
                     modifier = Modifier.weight(1f)
                 ) {
-                    Text("Редагувати")
+                    Text(stringResource(R.string.edit))
                 }
                 OutlinedButton(
                     onClick = onDelete,
                     modifier = Modifier.weight(1f)
                 ) {
-                    Text("Видалити")
+                    Text(stringResource(R.string.delete))
                 }
             }
         }
@@ -360,7 +373,7 @@ private fun PhotoGallery(
     ) {
         if (urls.isEmpty()) {
             Text(
-                text = "немає фото",
+                text = stringResource(R.string.photo_missing),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -407,18 +420,18 @@ private fun SellerCard(ad: Ad) {
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(
-                text = "Продавець",
+                text = stringResource(R.string.seller),
                 style = MaterialTheme.typography.labelLarge,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
             Spacer(Modifier.height(4.dp))
             Text(
-                text = ad.author.name,
+                text = if (ad.isLocal) stringResource(R.string.you) else ad.author.name,
                 style = MaterialTheme.typography.titleMedium
             )
             if (ad.author.rating > 0.0) {
                 Text(
-                    text = "Рейтинг: ${ad.author.rating} із 5.0",
+                    text = stringResource(R.string.rating_format, ad.author.rating.toString()),
                     style = MaterialTheme.typography.bodyMedium
                 )
             }
@@ -450,23 +463,24 @@ private fun dialPhone(context: Context, phone: String) {
 }
 
 // Opens the system share sheet with the ad text
-private fun shareAd(context: Context, ad: Ad) {
+private fun shareAd(
+    context: Context,
+    ad: Ad,
+    currency: String,
+    city: String,
+    chooserTitle: String
+) {
     val text = buildString {
         appendLine(ad.title)
-        appendLine(ad.formattedPrice())
-        appendLine(ad.city)
+        appendLine(ad.formattedPrice(currency))
+        appendLine(city)
         append(ad.description)
     }
     val intent = Intent(Intent.ACTION_SEND).apply {
         type = "text/plain"
         putExtra(Intent.EXTRA_TEXT, text)
     }
-    context.startActivity(Intent.createChooser(intent, "Поділитися оголошенням"))
-}
-
-private fun conditionLabel(condition: AdCondition): String = when (condition) {
-    AdCondition.NEW -> "Нове"
-    AdCondition.USED -> "Вживане"
+    context.startActivity(Intent.createChooser(intent, chooserTitle))
 }
 
 @Preview(showBackground = true)

@@ -1,3 +1,136 @@
 <resources>
     <string name="app_name">AdBoard</string>
+
+    <!-- Common -->
+    <string name="currency_uah">грн</string>
+    <string name="date_today">Сьогодні</string>
+    <string name="date_yesterday">Вчора</string>
+    <string name="date_draft">чернетка</string>
+    <string name="photo_missing">немає фото</string>
+    <string name="back">← Назад</string>
+    <string name="cancel">Скасувати</string>
+    <string name="delete">Видалити</string>
+    <string name="edit">Редагувати</string>
+    <string name="share">Поділитися</string>
+    <string name="share_chooser">Поділитися оголошенням</string>
+    <string name="show_phone">Показати телефон</string>
+    <string name="negotiable">Договірна</string>
+    <string name="rating_format">Рейтинг: %1$s із 5.0</string>
+    <string name="seller">Продавець</string>
+    <string name="you">Ви</string>
+    <string name="description_label">Опис</string>
+    <string name="category_label">Категорія</string>
+    <string name="condition_label">Стан</string>
+    <string name="city_label">Місто</string>
+    <string name="published_label">Опубліковано</string>
+    <string name="views_label">Перегляди</string>
+    <string name="ad_screen_title">Оголошення</string>
+    <string name="ad_not_found">Оголошення не знайдено</string>
+    <string name="try_again">Спробувати ще раз</string>
+    <string name="delete_ad_title">Видалити оголошення?</string>
+    <string name="delete_ad_text">Дію не можна скасувати.</string>
+
+    <!-- Ad list -->
+    <string name="board_title">Дошка оголошень</string>
+    <string name="add">Додати</string>
+    <string name="search">Пошук</string>
+    <string name="search_placeholder">Назва, опис або місто</string>
+    <string name="offline_banner">Немає з\'єднання. Показано збережені дані</string>
+    <string name="retry">Повторити</string>
+    <string name="found_count">Знайдено %1$d із %2$d</string>
+    <string name="filters">Фільтри</string>
+    <string name="filters_with_count">Фільтри (%1$d)</string>
+    <string name="all">Усі</string>
+    <string name="nothing_found">Нічого не знайдено</string>
+    <string name="filtered_hint">Спробуйте змінити запит або фільтри</string>
+    <string name="no_ads">На дошці ще немає оголошень</string>
+    <string name="post_ad">Подати оголошення</string>
+    <string name="sort_newest">Новіші</string>
+    <string name="sort_cheapest">Дешевші</string>
+    <string name="sort_expensive">Дорожчі</string>
+
+    <!-- Filters -->
+    <string name="filters_title">Фільтри</string>
+    <string name="all_cities">Усі міста</string>
+    <string name="price_label">Ціна, грн</string>
+    <string name="price_from">Від</string>
+    <string name="price_to">До</string>
+    <string name="only_with_photo">Тільки з фото</string>
+    <string name="reset">Скинути</string>
+    <string name="show_count">Показати %1$d</string>
+
+    <!-- Condition -->
+    <string name="condition_new">Нове</string>
+    <string name="condition_used">Вживане</string>
+
+    <!-- Status -->
+    <string name="status_published">Опубліковано</string>
+    <string name="status_draft">Чернетка</string>
+    <string name="status_archived">Архів</string>
+
+    <!-- Ad form -->
+    <string name="new_ad">Нове оголошення</string>
+    <string name="edit_ad">Редагування</string>
+    <string name="photos_up_to">Фото (до %1$d)</string>
+    <string name="title_label">Заголовок</string>
+    <string name="phone_label">Контактний телефон</string>
+    <string name="save_draft">Зберегти чернетку</string>
+    <string name="publish">Опублікувати</string>
+
+    <!-- Validation -->
+    <string name="error_title_short">Мінімум 5 символів</string>
+    <string name="error_title_long">Максимум 60 символів</string>
+    <string name="error_description_short">Мінімум 20 символів</string>
+    <string name="error_description_long">Максимум 2000 символів</string>
+    <string name="error_price_required">Вкажіть ціну</string>
+    <string name="error_price_positive">Ціна має бути більшою за 0</string>
+    <string name="error_price_too_high">Занадто велика ціна</string>
+    <string name="error_phone">Вкажіть телефон, наприклад +380671234567</string>
+    <string name="error_photo">Додайте хоча б одне фото</string>
+
+    <!-- My ads -->
+    <string name="my_ads_title">Мої оголошення</string>
+    <string name="tab_active">Активні</string>
+    <string name="tab_drafts">Чернетки</string>
+    <string name="tab_archived">Архів</string>
+    <string name="action_publish">Опублікувати</string>
+    <string name="action_edit">Редагувати</string>
+    <string name="action_archive">Зняти з публікації</string>
+    <string name="action_delete">Видалити</string>
+    <string name="empty_active">Немає активних оголошень</string>
+    <string name="empty_drafts">Немає чернеток</string>
+    <string name="empty_archive">Архів порожній</string>
+    <string name="empty_hint">Створіть оголошення, щоб його побачили інші</string>
+
+    <!-- Favorites -->
+    <string name="favorites_title">Обране</string>
+    <string name="favorites_empty">Немає обраних оголошень</string>
+    <string name="favorites_hint">Натисніть ♥ на картці, щоб зберегти оголошення</string>
+
+    <!-- Settings -->
+    <string name="settings_title">Налаштування</string>
+    <string name="language_section">Мова</string>
+    <string name="language_ukrainian">Українська</string>
+    <string name="language_english">English</string>
+    <string name="appearance_section">Оформлення</string>
+    <string name="theme_system">Системна</string>
+    <string name="theme_light">Світла</string>
+    <string name="theme_dark">Темна</string>
+    <string name="theme_system_desc">Як у системі</string>
+    <string name="theme_light_desc">Світло-сірі кольори</string>
+    <string name="theme_dark_desc">Темні кольори</string>
+
+    <!-- Bottom navigation -->
+    <string name="nav_search">Пошук</string>
+    <string name="nav_my">Мої</string>
+    <string name="nav_favorites">Обране</string>
+    <string name="nav_settings">Налаштування</string>
+
+    <!-- View counter -->
+    <plurals name="views">
+        <item quantity="one">%d перегляд</item>
+        <item quantity="few">%d перегляди</item>
+        <item quantity="many">%d переглядів</item>
+        <item quantity="other">%d перегляду</item>
+    </plurals>
 </resources>

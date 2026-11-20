@@ -4,10 +4,10 @@ import com.example.adboardapp.model.Ad
 import com.example.adboardapp.model.AdStatus
 
 // Tabs of the my ads screen
-enum class MyAdsTab(val label: String, val status: AdStatus) {
-    ACTIVE("Активні", AdStatus.PUBLISHED),
-    DRAFTS("Чернетки", AdStatus.DRAFT),
-    ARCHIVED("Архів", AdStatus.ARCHIVED)
+enum class MyAdsTab(val status: AdStatus) {
+    ACTIVE(AdStatus.PUBLISHED),
+    DRAFTS(AdStatus.DRAFT),
+    ARCHIVED(AdStatus.ARCHIVED)
 }
 
 // State of the my ads screen

@@ -1,6 +1,7 @@
 package com.example.adboardapp.ui
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -32,9 +33,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.adboardapp.R
 import com.example.adboardapp.model.Ad
 import com.example.adboardapp.model.AdStatus
 import com.example.adboardapp.ui.theme.AdBoardAppTheme
@@ -54,8 +57,8 @@ fun MyAdsScreen(
     if (pendingDelete != null) {
         AlertDialog(
             onDismissRequest = { pendingDelete = null },
-            title = { Text("Видалити оголошення?") },
-            text = { Text("Дію не можна скасувати.") },
+            title = { Text(stringResource(R.string.delete_ad_title)) },
+            text = { Text(stringResource(R.string.delete_ad_text)) },
             confirmButton = {
                 TextButton(
                     onClick = {
@@ -63,12 +66,12 @@ fun MyAdsScreen(
                         pendingDelete = null
                     }
                 ) {
-                    Text("Видалити")
+                    Text(stringResource(R.string.delete))
                 }
             },
             dismissButton = {
                 TextButton(onClick = { pendingDelete = null }) {
-                    Text("Скасувати")
+                    Text(stringResource(R.string.cancel))
                 }
             }
         )
@@ -106,10 +109,10 @@ fun MyAdsContent(
         modifier = modifier.fillMaxSize(),
         topBar = {
             TopAppBar(
-                title = { Text("Мої оголошення") },
+                title = { Text(stringResource(R.string.my_ads_title)) },
                 actions = {
                     TextButton(onClick = onAddClick) {
-                        Text("Додати")
+                        Text(stringResource(R.string.add))
                     }
                 }
             )
@@ -136,7 +139,7 @@ fun MyAdsContent(
                         Tab(
                             selected = uiState.selectedTab == tab,
                             onClick = { onTabChange(tab) },
-                            text = { Text("${tab.label} (${uiState.count(tab)})") }
+                            text = { Text("${stringResource(tabRes(tab))} (${uiState.count(tab)})") }
                         )
                     }
                 }
@@ -199,25 +202,25 @@ private fun AdActions(
         when (ad.status) {
             AdStatus.DRAFT -> {
                 TextButton(onClick = { onPublishClick(ad.id) }) {
-                    Text("Опублікувати")
+                    Text(stringResource(R.string.action_publish))
                 }
                 TextButton(onClick = { onEditClick(ad.id) }) {
-                    Text("Редагувати")
+                    Text(stringResource(R.string.action_edit))
                 }
             }
 
             AdStatus.PUBLISHED -> {
                 TextButton(onClick = { onEditClick(ad.id) }) {
-                    Text("Редагувати")
+                    Text(stringResource(R.string.action_edit))
                 }
                 TextButton(onClick = { onArchiveClick(ad.id) }) {
-                    Text("Зняти з публікації")
+                    Text(stringResource(R.string.action_archive))
                 }
             }
 
             AdStatus.ARCHIVED -> {
                 TextButton(onClick = { onPublishClick(ad.id) }) {
-                    Text("Опублікувати")
+                    Text(stringResource(R.string.action_publish))
                 }
             }
         }
@@ -226,7 +229,7 @@ private fun AdActions(
 
         TextButton(onClick = onDeleteClick) {
             Text(
-                text = "Видалити",
+                text = stringResource(R.string.action_delete),
                 color = MaterialTheme.colorScheme.error
             )
         }
@@ -249,24 +252,31 @@ private fun EmptyMyAds(
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Text(
                 text = when (tab) {
-                    MyAdsTab.ACTIVE -> "Немає активних оголошень"
-                    MyAdsTab.DRAFTS -> "Немає чернеток"
-                    MyAdsTab.ARCHIVED -> "Архів порожній"
+                    MyAdsTab.ACTIVE -> stringResource(R.string.empty_active)
+                    MyAdsTab.DRAFTS -> stringResource(R.string.empty_drafts)
+                    MyAdsTab.ARCHIVED -> stringResource(R.string.empty_archive)
                 },
                 style = MaterialTheme.typography.titleMedium
             )
             Spacer(Modifier.height(8.dp))
             Text(
-                text = "Створіть оголошення, щоб його побачили інші",
+                text = stringResource(R.string.empty_hint),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
             Spacer(Modifier.height(12.dp))
             Button(onClick = onAddClick) {
-                Text("Подати оголошення")
+                Text(stringResource(R.string.post_ad))
             }
         }
     }
+}
+
+@StringRes
+internal fun tabRes(tab: MyAdsTab): Int = when (tab) {
+    MyAdsTab.ACTIVE -> R.string.tab_active
+    MyAdsTab.DRAFTS -> R.string.tab_drafts
+    MyAdsTab.ARCHIVED -> R.string.tab_archived
 }
 
 @Preview(showBackground = true)

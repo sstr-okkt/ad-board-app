@@ -1,12 +1,14 @@
 package com.example.adboardapp.ui
 
 import com.example.adboardapp.model.Ad
+import com.example.adboardapp.model.categorySearchNames
+import com.example.adboardapp.model.citySearchNames
 
 // Sort order of the ad list
-enum class AdSort(val label: String) {
-    NEWEST("Новіші"),
-    CHEAPEST("Дешевші"),
-    EXPENSIVE("Дорожчі")
+enum class AdSort {
+    NEWEST,
+    CHEAPEST,
+    EXPENSIVE
 }
 
 // Single state object for the list screen
@@ -54,8 +56,10 @@ data class ListUiState(
         if (text.isEmpty()) return true
         return ad.title.contains(text, ignoreCase = true) ||
             ad.description.contains(text, ignoreCase = true) ||
-            ad.city.contains(text, ignoreCase = true) ||
-            ad.category.contains(text, ignoreCase = true)
+            categorySearchNames(ad.category).any { it.contains(text, ignoreCase = true) } ||
+            citySearchNames(ad.city).any { it.contains(text, ignoreCase = true) } ||
+            ad.category.contains(text, ignoreCase = true) ||
+            ad.city.contains(text, ignoreCase = true)
     }
 
     private fun matchesFilters(ad: Ad): Boolean {

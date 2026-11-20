@@ -28,10 +28,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
+import com.example.adboardapp.R
 import com.example.adboardapp.model.Ad
 import com.example.adboardapp.model.AdStatus
 
@@ -64,7 +66,7 @@ internal fun AdCard(
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
-                        text = ad.formattedPrice(),
+                        text = ad.formattedPrice(stringResource(R.string.currency_uah)),
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.primary,
@@ -93,7 +95,7 @@ internal fun AdCard(
                 Spacer(Modifier.height(6.dp))
 
                 Text(
-                    text = "${ad.city} · ${formatPublishedAt(ad.publishedAt)}",
+                    text = "${cityLabel(ad.city)} · ${publishedAtLabel(ad.publishedAt)}",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -122,7 +124,7 @@ internal fun AdThumbnail(
     ) {
         if (url.isNullOrBlank()) {
             Text(
-                text = "немає фото",
+                text = stringResource(R.string.photo_missing),
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -146,7 +148,7 @@ internal fun FavoriteButton(
     IconButton(onClick = onClick) {
         Icon(
             imageVector = if (isFavorite) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
-            contentDescription = if (isFavorite) "Прибрати з обраного" else "Додати в обране",
+            contentDescription = null,
             tint = if (isFavorite) {
                 Color(0xFFE91E63)
             } else {

@@ -22,9 +22,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.adboardapp.R
 import com.example.adboardapp.model.Ad
 import com.example.adboardapp.ui.theme.AdBoardAppTheme
 import org.koin.androidx.compose.koinViewModel
@@ -56,7 +58,7 @@ fun FavoritesContent(
     Scaffold(
         modifier = modifier.fillMaxSize(),
         topBar = {
-            TopAppBar(title = { Text("Обране") })
+            TopAppBar(title = { Text(stringResource(R.string.favorites_title)) })
         }
     ) { innerPadding ->
         Box(
@@ -86,12 +88,12 @@ fun FavoritesContent(
                     ) {
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
                             Text(
-                                text = "Немає обраних оголошень",
+                                text = stringResource(R.string.favorites_empty),
                                 style = MaterialTheme.typography.titleMedium
                             )
                             Spacer(Modifier.height(8.dp))
                             Text(
-                                text = "Натисніть ♥ на картці, щоб зберегти оголошення",
+                                text = stringResource(R.string.favorites_hint),
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
