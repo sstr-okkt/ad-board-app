@@ -33,6 +33,7 @@
     <!-- Ad list -->
     <string name="board_title">Ad board</string>
     <string name="add">Add</string>
+    <string name="add_ad">Add ad</string>
     <string name="search">Search</string>
     <string name="search_placeholder">Title, description or city</string>
     <string name="offline_banner">No connection. Showing saved data</string>

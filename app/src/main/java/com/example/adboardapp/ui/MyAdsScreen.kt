@@ -112,9 +112,7 @@ fun MyAdsContent(
             TopAppBar(
                 title = { Text(stringResource(R.string.my_ads_title)) },
                 actions = {
-                    TextButton(onClick = onAddClick) {
-                        Text(stringResource(R.string.add))
-                    }
+                    AddAdButton(onClick = onAddClick)
                 }
             )
         },

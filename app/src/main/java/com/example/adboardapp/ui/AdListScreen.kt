@@ -102,9 +102,7 @@ fun AdListContent(
             TopAppBar(
                 title = { Text(stringResource(R.string.board_title)) },
                 actions = {
-                    TextButton(onClick = onAddClick) {
-                        Text(stringResource(R.string.add))
-                    }
+                    AddAdButton(onClick = onAddClick)
                 }
             )
         },

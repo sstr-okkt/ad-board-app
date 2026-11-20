@@ -33,6 +33,7 @@
     <!-- Ad list -->
     <string name="board_title">Дошка оголошень</string>
     <string name="add">Додати</string>
+    <string name="add_ad">Додати оголошення</string>
     <string name="search">Пошук</string>
     <string name="search_placeholder">Назва, опис або місто</string>
     <string name="offline_banner">Немає з\'єднання. Показано збережені дані</string>

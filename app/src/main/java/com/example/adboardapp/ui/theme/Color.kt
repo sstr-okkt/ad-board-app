@@ -83,3 +83,7 @@ val DarkSurfaceContainerHigh = Color(0xFF2C2F35)
 val DarkSurfaceContainerHighest = Color(0xFF373A40)
 val DarkInverseSurface = Color(0xFFE2E2E4)
 val DarkInverseOnSurface = Color(0xFF2F3033)
+
+// Green action button
+val ButtonGreen = Color(0xFF2E7D32)
+val ButtonGreenDark = Color(0xFF43A047)
