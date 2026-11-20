@@ -360,7 +360,11 @@ private fun FiltersSheet(
 
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 OutlinedButton(
-                    onClick = { draft = AdFilters() },
+                    onClick = {
+                        val empty = AdFilters()
+                        draft = empty
+                        onApply(empty)
+                    },
                     modifier = Modifier.weight(1f)
                 ) {
                     Text(stringResource(R.string.reset))
