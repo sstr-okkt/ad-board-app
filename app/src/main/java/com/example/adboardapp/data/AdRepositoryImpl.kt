@@ -41,4 +41,6 @@ class AdRepositoryImpl(
             ?: Result.Error("Оголошення не знайдено в кеші")
 
     override suspend fun toggleFavorite(id: Int) = dao.toggleFavorite(id)
+
+    override suspend fun incrementViews(id: Int) = dao.incrementViews(id)
 }

@@ -1,5 +1,9 @@
 package com.example.adboardapp.ui
 
+import android.content.Context
+import android.content.Intent
+import android.net.Uri
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -10,8 +14,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
@@ -20,19 +28,29 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import coil3.compose.AsyncImage
 import com.example.adboardapp.model.Ad
+import com.example.adboardapp.model.AdCondition
 import com.example.adboardapp.ui.theme.AdBoardAppTheme
 
 // Connects the ViewModel with the stateless details content
@@ -46,7 +64,8 @@ fun DetailScreen(
     DetailContent(
         uiState = uiState,
         onBack = onBack,
-        onRetry = viewModel::reload
+        onRetry = viewModel::reload,
+        onFavoriteClick = viewModel::onFavoriteClick
     )
 }
 
@@ -57,8 +76,11 @@ fun DetailContent(
     uiState: DetailUiState,
     onBack: () -> Unit,
     onRetry: () -> Unit,
+    onFavoriteClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val ad = uiState.ad
+
     Scaffold(
         modifier = modifier.fillMaxSize(),
         topBar = {
@@ -68,11 +90,25 @@ fun DetailContent(
                     TextButton(onClick = onBack) {
                         Text("← Назад")
                     }
+                },
+                actions = {
+                    if (ad != null) {
+                        TextButton(onClick = onFavoriteClick) {
+                            Text(
+                                text = if (ad.isFavorite) "♥" else "♡",
+                                fontSize = 20.sp,
+                                color = if (ad.isFavorite) {
+                                    Color(0xFFE91E63)
+                                } else {
+                                    MaterialTheme.colorScheme.onSurfaceVariant
+                                }
+                            )
+                        }
+                    }
                 }
             )
         }
     ) { innerPadding ->
-        val ad = uiState.ad
         when {
             uiState.isLoading -> Box(
                 modifier = Modifier
@@ -130,6 +166,7 @@ fun DetailContent(
 @Composable
 private fun DetailBody(ad: Ad) {
     val context = LocalContext.current
+    var phoneVisible by rememberSaveable(ad.id) { mutableStateOf(false) }
 
     Column(
         modifier = Modifier
@@ -138,67 +175,187 @@ private fun DetailBody(ad: Ad) {
             .verticalScroll(rememberScrollState())
             .padding(16.dp)
     ) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
+        PhotoGallery(
+            urls = ad.imageUrls,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(320.dp)
+        )
+
+        Spacer(Modifier.height(16.dp))
+
+        Row(verticalAlignment = Alignment.Top) {
             Text(
                 text = ad.title,
                 style = MaterialTheme.typography.headlineSmall,
                 fontWeight = FontWeight.SemiBold,
                 modifier = Modifier.weight(1f)
             )
-            StatusBadge(ad.status)
+            if (ad.isLocal) {
+                Spacer(Modifier.width(8.dp))
+                StatusBadge(ad.status)
+            }
         }
 
-        Spacer(Modifier.height(12.dp))
+        Spacer(Modifier.height(8.dp))
 
-        Text(
-            text = ad.formattedPrice(),
-            style = MaterialTheme.typography.headlineMedium,
-            color = MaterialTheme.colorScheme.primary
-        )
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text(
+                text = ad.formattedPrice(),
+                style = MaterialTheme.typography.headlineMedium,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.primary
+            )
+            if (ad.isNegotiable) {
+                Spacer(Modifier.width(8.dp))
+                Surface(
+                    color = MaterialTheme.colorScheme.secondaryContainer,
+                    shape = RoundedCornerShape(50)
+                ) {
+                    Text(
+                        text = "Договірна",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSecondaryContainer,
+                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp)
+                    )
+                }
+            }
+        }
 
         Spacer(Modifier.height(16.dp))
 
         InfoRow(label = "Категорія", value = ad.category)
+        InfoRow(label = "Стан", value = conditionLabel(ad.condition))
         InfoRow(label = "Місто", value = ad.city)
-        InfoRow(label = "Переглядів", value = ad.views.toString())
-        InfoRow(
-            label = "Опубліковано",
-            value = ad.publishedAt ?: "ще не опубліковано"
-        )
+        InfoRow(label = "Опубліковано", value = formatPublishedAt(ad.publishedAt))
+        InfoRow(label = "Перегляди", value = viewsLabel(ad.views))
 
-        Spacer(Modifier.height(8.dp))
-        HorizontalDivider()
-        Spacer(Modifier.height(16.dp))
+        if (ad.description.isNotBlank()) {
+            Spacer(Modifier.height(8.dp))
+            HorizontalDivider()
+            Spacer(Modifier.height(16.dp))
+            Text(
+                text = "Опис",
+                style = MaterialTheme.typography.labelLarge,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+            Spacer(Modifier.height(4.dp))
+            Text(
+                text = ad.description,
+                style = MaterialTheme.typography.bodyLarge
+            )
+        }
 
-        Text(
-            text = "Автор",
-            style = MaterialTheme.typography.labelLarge,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
-        Text(
-            text = ad.author.name,
-            style = MaterialTheme.typography.titleMedium
-        )
-        Text(
-            text = "Рейтинг: ${ad.author.rating} із 5.0",
-            style = MaterialTheme.typography.bodyMedium
-        )
-        Text(
-            text = "Контакт: ${ad.author.contact ?: "не вказано"}",
-            style = MaterialTheme.typography.bodyMedium
-        )
+        Spacer(Modifier.height(20.dp))
+
+        SellerCard(ad = ad)
 
         Spacer(Modifier.height(20.dp))
 
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            Button(onClick = { showToast(context, "Написати автору: ${ad.author.name}") }) {
-                Text("Написати автору")
-            }
             if (ad.author.contact != null) {
-                OutlinedButton(onClick = { showToast(context, "Телефон: ${ad.author.contact}") }) {
-                    Text("Подзвонити")
+                if (phoneVisible) {
+                    Button(
+                        onClick = { dialPhone(context, ad.author.contact) },
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Text(ad.author.contact)
+                    }
+                } else {
+                    Button(
+                        onClick = { phoneVisible = true },
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Text("Показати телефон")
+                    }
                 }
             }
+            OutlinedButton(
+                onClick = { shareAd(context, ad) },
+                modifier = Modifier.weight(1f)
+            ) {
+                Text("Поділитися")
+            }
+        }
+
+        Spacer(Modifier.height(24.dp))
+    }
+}
+
+// Swipeable gallery of the ad photos
+@Composable
+private fun PhotoGallery(
+    urls: List<String>,
+    modifier: Modifier = Modifier
+) {
+    Box(
+        modifier = modifier
+            .clip(RoundedCornerShape(16.dp))
+            .background(MaterialTheme.colorScheme.surfaceVariant),
+        contentAlignment = Alignment.Center
+    ) {
+        if (urls.isEmpty()) {
+            Text(
+                text = "немає фото",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        } else {
+            val pagerState = rememberPagerState(pageCount = { urls.size })
+
+            HorizontalPager(
+                state = pagerState,
+                modifier = Modifier.fillMaxSize()
+            ) { page ->
+                AsyncImage(
+                    model = urls[page],
+                    contentDescription = null,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier.fillMaxSize()
+                )
+            }
+
+            Surface(
+                color = Color.Black.copy(alpha = 0.55f),
+                shape = RoundedCornerShape(50),
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .padding(12.dp)
+            ) {
+                Text(
+                    text = "${pagerState.currentPage + 1} / ${urls.size}",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = Color.White,
+                    modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp)
+                )
+            }
+        }
+    }
+}
+
+// Seller name, rating and the phone action
+@Composable
+private fun SellerCard(ad: Ad) {
+    Surface(
+        shape = RoundedCornerShape(16.dp),
+        tonalElevation = 2.dp,
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Text(
+                text = "Продавець",
+                style = MaterialTheme.typography.labelLarge,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+            Spacer(Modifier.height(4.dp))
+            Text(
+                text = ad.author.name,
+                style = MaterialTheme.typography.titleMedium
+            )
+            Text(
+                text = "Рейтинг: ${ad.author.rating} із 5.0",
+                style = MaterialTheme.typography.bodyMedium
+            )
         }
     }
 }
@@ -219,6 +376,33 @@ private fun InfoRow(label: String, value: String) {
     }
 }
 
+// Opens the phone dialer with the seller number
+private fun dialPhone(context: Context, phone: String) {
+    val number = phone.filter { it.isDigit() || it == '+' }
+    val intent = Intent(Intent.ACTION_DIAL, Uri.parse("tel:$number"))
+    runCatching { context.startActivity(intent) }
+}
+
+// Opens the system share sheet with the ad text
+private fun shareAd(context: Context, ad: Ad) {
+    val text = buildString {
+        appendLine(ad.title)
+        appendLine(ad.formattedPrice())
+        appendLine(ad.city)
+        append(ad.description)
+    }
+    val intent = Intent(Intent.ACTION_SEND).apply {
+        type = "text/plain"
+        putExtra(Intent.EXTRA_TEXT, text)
+    }
+    context.startActivity(Intent.createChooser(intent, "Поділитися оголошенням"))
+}
+
+private fun conditionLabel(condition: AdCondition): String = when (condition) {
+    AdCondition.NEW -> "Нове"
+    AdCondition.USED -> "Вживане"
+}
+
 @Preview(showBackground = true)
 @Composable
 private fun DetailContentPreview() {
@@ -226,7 +410,8 @@ private fun DetailContentPreview() {
         DetailContent(
             uiState = DetailUiState(ad = previewAds.first(), isLoading = false),
             onBack = {},
-            onRetry = {}
+            onRetry = {},
+            onFavoriteClick = {}
         )
     }
 }

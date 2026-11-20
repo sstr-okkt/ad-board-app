@@ -18,4 +18,7 @@ interface AdRepository {
 
     // Adds or removes the ad from favorites
     suspend fun toggleFavorite(id: Int)
+
+    // Counts one more view of the ad
+    suspend fun incrementViews(id: Int)
 }
