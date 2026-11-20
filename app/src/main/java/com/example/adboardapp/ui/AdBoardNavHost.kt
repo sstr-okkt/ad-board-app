@@ -6,6 +6,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -28,11 +29,12 @@ import org.koin.core.parameter.parametersOf
 private const val LIST_ROUTE = "list"
 private const val MY_ROUTE = "my"
 private const val FAVORITES_ROUTE = "favorites"
+private const val SETTINGS_ROUTE = "settings"
 private const val DETAILS_ROUTE = "details"
 private const val EDIT_ROUTE = "edit"
 
 // Bottom bar tabs
-private val tabRoutes = setOf(LIST_ROUTE, MY_ROUTE, FAVORITES_ROUTE)
+private val tabRoutes = setOf(LIST_ROUTE, MY_ROUTE, FAVORITES_ROUTE, SETTINGS_ROUTE)
 
 // Single NavHost with the bottom bar and all screens
 @Composable
@@ -85,6 +87,10 @@ fun AdBoardNavHost(
                 FavoritesScreen(
                     onAdClick = { id -> navController.navigate("$DETAILS_ROUTE/$id") }
                 )
+            }
+
+            composable(SETTINGS_ROUTE) {
+                SettingsScreen()
             }
 
             composable(
@@ -144,6 +150,12 @@ private fun BottomBar(
             onClick = { onSelect(FAVORITES_ROUTE) },
             icon = { Icon(Icons.Filled.Favorite, contentDescription = null) },
             label = { Text("Обране") }
+        )
+        NavigationBarItem(
+            selected = currentRoute == SETTINGS_ROUTE,
+            onClick = { onSelect(SETTINGS_ROUTE) },
+            icon = { Icon(Icons.Filled.Settings, contentDescription = null) },
+            label = { Text("Налаштування") }
         )
     }
 }

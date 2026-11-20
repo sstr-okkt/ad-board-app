@@ -11,7 +11,7 @@ because Room is the single source of truth.
   <img src="docs/screenshots/home.png" width="240" alt="Dark theme">
   <img src="docs/screenshots/theme_switch.png" width="240" alt="Theme switch">
 </p>
-<p align="center"><sub>Light theme · Dark theme · Theme switch</sub></p>
+<p align="center"><sub>Light theme · Dark theme · Settings</sub></p>
 
 <p align="center">
   <img src="docs/screenshots/details.png" width="240" alt="Ad details">
@@ -41,7 +41,7 @@ because Room is the single source of truth.
 - Favorites.
 - Offline-first: the cached list stays available, a banner explains the missing connection,
   and user ads are never overwritten by a network refresh.
-- Light and dark themes with a System / Light / Dark switch, saved between launches.
+- Light and dark themes with a System / Light / Dark switch in Settings, saved between launches.
 - Dependency injection with Koin.
 
 ## Tech stack
