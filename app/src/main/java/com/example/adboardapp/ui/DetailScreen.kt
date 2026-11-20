@@ -304,7 +304,7 @@ private fun DetailBody(
         Spacer(Modifier.height(20.dp))
 
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            if (ad.author.contact != null) {
+            if (!ad.isLocal && ad.author.contact != null) {
                 if (phoneVisible) {
                     Button(
                         onClick = { dialPhone(context, ad.author.contact) },
