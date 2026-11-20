@@ -1,29 +1,32 @@
-package com.example.adboardapp.data.remote
+package com.example.adboardapp.di
 
+import com.example.adboardapp.data.remote.ProductsApi
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
+import org.koin.dsl.module
 import retrofit2.Retrofit
 
-// Single Retrofit instance for the whole app
-object NetworkModule {
-    private const val BASE_URL = "https://dummyjson.com/"
+// Provides the network client
+val networkModule = module {
+    single<ProductsApi> { createProductsApi() }
+}
 
-    private val json = Json { ignoreUnknownKeys = true }
+private fun createProductsApi(): ProductsApi {
+    val json = Json { ignoreUnknownKeys = true }
 
-    private val client = OkHttpClient.Builder()
+    val client = OkHttpClient.Builder()
         .addInterceptor(
             HttpLoggingInterceptor().apply { level = HttpLoggingInterceptor.Level.BASIC }
         )
         .build()
 
-    private val retrofit = Retrofit.Builder()
-        .baseUrl(BASE_URL)
+    return Retrofit.Builder()
+        .baseUrl("https://dummyjson.com/")
         .client(client)
         .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
         .build()
-
-    val productsApi: ProductsApi = retrofit.create(ProductsApi::class.java)
+        .create(ProductsApi::class.java)
 }

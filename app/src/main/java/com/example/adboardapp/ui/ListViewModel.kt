@@ -1,9 +1,7 @@
 package com.example.adboardapp.ui
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.adboardapp.AdBoardApp
 import com.example.adboardapp.domain.ObserveAdsUseCase
 import com.example.adboardapp.domain.RefreshAdsUseCase
 import com.example.adboardapp.model.Result
@@ -14,11 +12,10 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 // Holds the screen state and handles user actions
-class ListViewModel(application: Application) : AndroidViewModel(application) {
-
-    private val repository = (application as AdBoardApp).repository
-    private val observeAds = ObserveAdsUseCase(repository)
-    private val refreshAds = RefreshAdsUseCase(repository)
+class ListViewModel(
+    private val observeAds: ObserveAdsUseCase,
+    private val refreshAds: RefreshAdsUseCase
+) : ViewModel() {
 
     private val _uiState = MutableStateFlow(ListUiState())
     val uiState: StateFlow<ListUiState> = _uiState.asStateFlow()
