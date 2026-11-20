@@ -1,20 +1,27 @@
 package com.example.adboardapp
 
 import android.app.Application
-import androidx.room.Room
-import com.example.adboardapp.data.AdRepositoryImpl
-import com.example.adboardapp.data.local.AppDatabase
-import com.example.adboardapp.data.remote.NetworkModule
-import com.example.adboardapp.domain.AdRepository
+import com.example.adboardapp.di.databaseModule
+import com.example.adboardapp.di.networkModule
+import com.example.adboardapp.di.repositoryModule
+import com.example.adboardapp.di.useCaseModule
+import com.example.adboardapp.di.viewModelModule
+import org.koin.android.ext.koin.androidContext
+import org.koin.core.context.startKoin
 
-// Holds app-wide singletons, a simple replacement for a DI framework
+// Starts Koin with all modules of the app
 class AdBoardApp : Application() {
-
-    val database: AppDatabase by lazy {
-        Room.databaseBuilder(this, AppDatabase::class.java, "app.db").build()
-    }
-
-    val repository: AdRepository by lazy {
-        AdRepositoryImpl(NetworkModule.productsApi, database.adDao())
+    override fun onCreate() {
+        super.onCreate()
+        startKoin {
+            androidContext(this@AdBoardApp)
+            modules(
+                networkModule,
+                databaseModule,
+                repositoryModule,
+                useCaseModule,
+                viewModelModule
+            )
+        }
     }
 }

@@ -1,0 +1,12 @@
+package com.example.adboardapp.di
+
+import com.example.adboardapp.ui.DetailViewModel
+import com.example.adboardapp.ui.ListViewModel
+import org.koin.core.module.dsl.viewModel
+import org.koin.dsl.module
+
+// Provides the ViewModels
+val viewModelModule = module {
+    viewModel { ListViewModel(get(), get()) }
+    viewModel { params -> DetailViewModel(params.get(), get()) }
+}

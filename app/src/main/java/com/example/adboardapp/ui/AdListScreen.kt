@@ -43,16 +43,16 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.adboardapp.model.Ad
 import com.example.adboardapp.model.AdStatus
 import com.example.adboardapp.ui.theme.AdBoardAppTheme
+import org.koin.androidx.compose.koinViewModel
 
 // Connects the ViewModel with the stateless screen content
 @Composable
 fun AdListScreen(
     onAdClick: (Int) -> Unit,
-    viewModel: ListViewModel = viewModel()
+    viewModel: ListViewModel = koinViewModel()
 ) {
     val context = LocalContext.current
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
