@@ -11,7 +11,7 @@ because Room is the single source of truth.
 <p align="center">
   <img src="docs/screenshots/home_light.png" width="240" alt="Light theme">
   <img src="docs/screenshots/home.png" width="240" alt="Dark theme">
-  <img src="docs/screenshots/theme_switch.png" width="240" alt="Theme switch">
+  <img src="docs/screenshots/theme_switch.png" width="240" alt="Settings">
 </p>
 <p align="center"><sub>Light theme · Dark theme · Settings</sub></p>
 
@@ -32,13 +32,15 @@ because Room is the single source of truth.
 ## Features
 
 - Ad feed with photos, price, title, city, publish date and view counter.
-- Search by title, description, city and category.
+- Search by title, description, city and category, with a clear action and keyboard search.
 - Category chips, sorting (newest, cheapest, most expensive) and filters:
-  city, price range, condition, "photos only".
+  city, price range, condition, "photos only"; filters can be reset from the sheet
+  or from the empty state.
 - Ad details with a swipeable photo gallery, description, seller block, phone reveal,
   share sheet, favorite toggle and view counter.
 - Creating and editing ads: up to 5 photos from the gallery, validation,
-  draft and publish actions.
+  draft and publish actions; duplicate submits are blocked and unsaved changes are confirmed.
+- Phone numbers are entered and displayed as `+380 XX XXX XX XX`.
 - "My ads" with Active, Drafts and Archive tabs; publish, archive and delete actions.
 - Favorites.
 - Offline-first: the cached list stays available, a banner explains the missing connection,
