@@ -86,14 +86,24 @@ class AdEditViewModel(
 
     // Saves the ad as a draft or publishes it
     fun save(publish: Boolean) {
+        if (_uiState.value.isSaving) return
+
         val validated = validate(_uiState.value, publish)
-        _uiState.value = validated
-        if (validated.hasErrors) return
+        if (validated.hasErrors) {
+            _uiState.value = validated
+            return
+        }
+
+        _uiState.value = validated.copy(isSaving = true)
 
         viewModelScope.launch {
             when (val result = saveAd(buildAd(validated), publish)) {
-                is Result.Success -> _uiState.update { it.copy(isSaved = true) }
-                is Result.Error -> _uiState.update { it.copy(saveError = result.message) }
+                is Result.Success -> _uiState.update {
+                    it.copy(isSaved = true, isSaving = false)
+                }
+                is Result.Error -> _uiState.update {
+                    it.copy(saveError = result.message, isSaving = false)
+                }
             }
         }
     }

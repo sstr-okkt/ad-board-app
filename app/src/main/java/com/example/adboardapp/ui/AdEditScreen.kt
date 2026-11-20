@@ -324,15 +324,25 @@ fun AdEditContent(
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                         OutlinedButton(
                             onClick = onSaveDraft,
+                            enabled = !state.isSaving,
                             modifier = Modifier.weight(1f)
                         ) {
                             Text(stringResource(R.string.save_draft))
                         }
                         Button(
                             onClick = onPublish,
+                            enabled = !state.isSaving,
                             modifier = Modifier.weight(1f)
                         ) {
-                            Text(stringResource(R.string.publish))
+                            if (state.isSaving) {
+                                CircularProgressIndicator(
+                                    modifier = Modifier.size(20.dp),
+                                    strokeWidth = 2.dp,
+                                    color = MaterialTheme.colorScheme.onPrimary
+                                )
+                            } else {
+                                Text(stringResource(R.string.publish))
+                            }
                         }
                     }
 
