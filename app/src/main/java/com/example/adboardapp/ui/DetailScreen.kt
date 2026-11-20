@@ -125,9 +125,11 @@ fun DetailContent(
             TopAppBar(
                 title = { Text(stringResource(R.string.ad_screen_title)) },
                 navigationIcon = {
-                    TextButton(onClick = onBack) {
-                        Text(stringResource(R.string.back))
-                    }
+                    GreenActionButton(
+                        text = stringResource(R.string.back),
+                        onClick = onBack,
+                        modifier = Modifier.padding(start = 8.dp)
+                    )
                 },
                 actions = {
                     if (ad != null) {
