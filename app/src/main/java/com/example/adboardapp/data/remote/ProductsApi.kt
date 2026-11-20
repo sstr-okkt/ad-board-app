@@ -6,7 +6,7 @@ import retrofit2.http.Path
 // REST endpoints of the test store API
 interface ProductsApi {
 
-    @GET("products?limit=8")
+    @GET("products?limit=30")
     suspend fun getProducts(): ProductsResponse
 
     @GET("products/{id}")

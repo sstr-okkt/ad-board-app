@@ -3,6 +3,7 @@ package com.example.adboardapp.data
 import com.example.adboardapp.data.local.AdDao
 import com.example.adboardapp.data.mapper.toDomain
 import com.example.adboardapp.data.mapper.toEntity
+import com.example.adboardapp.data.mapper.toImageEntities
 import com.example.adboardapp.data.remote.ProductsApi
 import com.example.adboardapp.domain.AdRepository
 import com.example.adboardapp.model.Ad
@@ -17,17 +18,20 @@ class AdRepositoryImpl(
 ) : AdRepository {
 
     override fun observeAds(): Flow<List<Ad>> =
-        dao.getAll().map { entities -> entities.map { it.toDomain() } }
+        dao.observeAll().map { rows -> rows.map { it.toDomain() } }
 
     override suspend fun refresh(): Result<Unit> = try {
         val products = api.getProducts().products
         // Keep the old cache if the response is empty
         if (products.isNotEmpty()) {
-            dao.insertAll(products.map { it.toEntity() })
+            dao.replaceRemote(
+                ads = products.map { it.toEntity() },
+                images = products.flatMap { it.toImageEntities() }
+            )
         }
         Result.Success(Unit)
     } catch (e: Exception) {
-        // Cache is not cleared, so the screen keeps showing stored data
+        // User ads stay in the database, only the network part is refreshed
         Result.Error("Не вдалося синхронізувати оголошення: ${e.message ?: "невідома помилка"}")
     }
 

@@ -8,13 +8,18 @@ import androidx.room.PrimaryKey
 data class AdEntity(
     @PrimaryKey val id: Int,
     val title: String,
+    val description: String,
     val price: Double,
+    val isNegotiable: Boolean,
     val category: String,
     val city: String,
+    val condition: String,
     val views: Int,
     val status: String,
     val authorName: String,
     val authorRating: Double,
     val authorContact: String?,
-    val publishedAt: String?
+    val publishedAt: String?,
+    val source: String,
+    val isFavorite: Boolean
 )

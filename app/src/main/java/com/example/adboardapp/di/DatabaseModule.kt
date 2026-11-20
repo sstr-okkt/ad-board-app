@@ -9,7 +9,9 @@ import org.koin.dsl.module
 // Provides the local database and its DAO
 val databaseModule = module {
     single {
-        Room.databaseBuilder(androidContext(), AppDatabase::class.java, "app.db").build()
+        Room.databaseBuilder(androidContext(), AppDatabase::class.java, "app.db")
+            .fallbackToDestructiveMigration(dropAllTables = true)
+            .build()
     }
     single<AdDao> { get<AppDatabase>().adDao() }
 }

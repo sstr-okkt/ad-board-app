@@ -17,6 +17,8 @@ data class ProductDto(
     val category: String,
     val stock: Int = 0,
     val brand: String? = null,
+    val thumbnail: String? = null,
+    val images: List<String> = emptyList(),
     val meta: MetaDto? = null,
     val reviews: List<ReviewDto> = emptyList()
 )
