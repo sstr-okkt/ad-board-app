@@ -44,6 +44,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -56,6 +57,8 @@ import com.example.adboardapp.R
 import com.example.adboardapp.model.Ad
 import com.example.adboardapp.model.AdCondition
 import com.example.adboardapp.ui.theme.AdBoardAppTheme
+import com.example.adboardapp.ui.theme.ButtonRed
+import com.example.adboardapp.ui.theme.ButtonRedDark
 
 // Connects the ViewModel with the stateless details content
 @Composable
@@ -123,11 +126,18 @@ fun DetailContent(
         modifier = modifier.fillMaxSize(),
         topBar = {
             TopAppBar(
-                title = { Text(stringResource(R.string.ad_screen_title)) },
+                title = {
+                    Text(
+                        text = stringResource(R.string.ad_screen_title),
+                        modifier = Modifier.padding(start = 12.dp)
+                    )
+                },
                 navigationIcon = {
-                    GreenActionButton(
+                    val isDark = MaterialTheme.colorScheme.background.luminance() < 0.5f
+                    ActionButton(
                         text = stringResource(R.string.back),
                         onClick = onBack,
+                        containerColor = if (isDark) ButtonRedDark else ButtonRed,
                         modifier = Modifier.padding(start = 8.dp)
                     )
                 },
