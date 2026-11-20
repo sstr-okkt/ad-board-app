@@ -27,7 +27,6 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedButton
@@ -109,11 +108,6 @@ fun AdListContent(
                 }
             )
         },
-        floatingActionButton = {
-            FloatingActionButton(onClick = onAddClick) {
-                Text("+", style = MaterialTheme.typography.headlineMedium)
-            }
-        }
     ) { innerPadding ->
         Box(
             modifier = Modifier
