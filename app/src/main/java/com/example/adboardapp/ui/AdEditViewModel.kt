@@ -16,9 +16,11 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
+// Up to 9 digits with an optional two-digit decimal part
+private val pricePattern = Regex("^\\d{0,9}([.,]\\d{0,2})?$")
+
 // Handles the create and edit form
-class AdEditViewModel(
-    private val adId: Int,
+class AdEditViewModel(    private val adId: Int,
     private val getAdById: GetAdByIdUseCase,
     private val saveAd: SaveAdUseCase
 ) : ViewModel() {
@@ -44,9 +46,8 @@ class AdEditViewModel(
     }
 
     fun onPriceChange(value: String) {
-        // Only digits and one separator are allowed
-        if (value.count { it.isDigit() } > 9) return
-        if (value.any { !it.isDigit() && it != '.' && it != ',' }) return
+        // Up to 9 digits and at most two decimals
+        if (!pricePattern.matches(value)) return
         _uiState.update { it.copy(price = value, priceError = null, isDirty = true) }
     }
 
