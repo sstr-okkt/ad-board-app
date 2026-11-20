@@ -79,6 +79,10 @@
     <string name="phone_label">Контактний телефон</string>
     <string name="save_draft">Зберегти чернетку</string>
     <string name="publish">Опублікувати</string>
+    <string name="discard_title">Скасувати зміни?</string>
+    <string name="discard_text">Незбережені зміни буде втрачено.</string>
+    <string name="discard_confirm">Вийти</string>
+    <string name="discard_cancel">Продовжити</string>
 
     <!-- Validation -->
     <string name="error_title_short">Мінімум 5 символів</string>

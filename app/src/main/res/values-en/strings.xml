@@ -79,6 +79,10 @@
     <string name="phone_label">Contact phone</string>
     <string name="save_draft">Save draft</string>
     <string name="publish">Publish</string>
+    <string name="discard_title">Discard changes?</string>
+    <string name="discard_text">Unsaved changes will be lost.</string>
+    <string name="discard_confirm">Leave</string>
+    <string name="discard_cancel">Keep editing</string>
 
     <!-- Validation -->
     <string name="error_title_short">At least 5 characters</string>

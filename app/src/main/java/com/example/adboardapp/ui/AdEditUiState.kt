@@ -41,6 +41,7 @@ data class AdEditUiState(
     val imageError: FieldError? = null,
     val saveError: String? = null,
     val isSaving: Boolean = false,
+    val isDirty: Boolean = false,
     val isSaved: Boolean = false
 ) {
     val canAddPhoto: Boolean get() = imageUrls.size < MAX_PHOTOS

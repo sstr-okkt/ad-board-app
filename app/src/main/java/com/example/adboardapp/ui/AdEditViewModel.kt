@@ -36,38 +36,38 @@ class AdEditViewModel(
     }
 
     fun onTitleChange(value: String) {
-        _uiState.update { it.copy(title = value, titleError = null) }
+        _uiState.update { it.copy(title = value, titleError = null, isDirty = true) }
     }
 
     fun onDescriptionChange(value: String) {
-        _uiState.update { it.copy(description = value, descriptionError = null) }
+        _uiState.update { it.copy(description = value, descriptionError = null, isDirty = true) }
     }
 
     fun onPriceChange(value: String) {
         // Only digits and one separator are allowed
         if (value.count { it.isDigit() } > 9) return
         if (value.any { !it.isDigit() && it != '.' && it != ',' }) return
-        _uiState.update { it.copy(price = value, priceError = null) }
+        _uiState.update { it.copy(price = value, priceError = null, isDirty = true) }
     }
 
     fun onNegotiableChange(value: Boolean) {
-        _uiState.update { it.copy(isNegotiable = value) }
+        _uiState.update { it.copy(isNegotiable = value, isDirty = true) }
     }
 
     fun onCategoryChange(value: String) {
-        _uiState.update { it.copy(category = value) }
+        _uiState.update { it.copy(category = value, isDirty = true) }
     }
 
     fun onCityChange(value: String) {
-        _uiState.update { it.copy(city = value) }
+        _uiState.update { it.copy(city = value, isDirty = true) }
     }
 
     fun onConditionChange(value: AdCondition) {
-        _uiState.update { it.copy(condition = value) }
+        _uiState.update { it.copy(condition = value, isDirty = true) }
     }
 
     fun onPhoneChange(value: String) {
-        _uiState.update { it.copy(phone = value, phoneError = null) }
+        _uiState.update { it.copy(phone = value, phoneError = null, isDirty = true) }
     }
 
     fun onImageAdded(url: String) {
@@ -75,13 +75,13 @@ class AdEditViewModel(
             if (state.imageUrls.size >= MAX_PHOTOS) {
                 state
             } else {
-                state.copy(imageUrls = state.imageUrls + url, imageError = null)
+                state.copy(imageUrls = state.imageUrls + url, imageError = null, isDirty = true)
             }
         }
     }
 
     fun onImageRemoved(url: String) {
-        _uiState.update { it.copy(imageUrls = it.imageUrls - url) }
+        _uiState.update { it.copy(imageUrls = it.imageUrls - url, isDirty = true) }
     }
 
     // Saves the ad as a draft or publishes it
