@@ -58,6 +58,7 @@
     <string name="price_to">To</string>
     <string name="only_with_photo">Photos only</string>
     <string name="reset">Reset</string>
+    <string name="reset_filters">Reset filters</string>
     <string name="show_count">Show %1$d</string>
 
     <!-- Condition -->

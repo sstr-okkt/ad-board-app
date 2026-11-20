@@ -58,6 +58,7 @@
     <string name="price_to">До</string>
     <string name="only_with_photo">Тільки з фото</string>
     <string name="reset">Скинути</string>
+    <string name="reset_filters">Скинути фільтри</string>
     <string name="show_count">Показати %1$d</string>
 
     <!-- Condition -->

@@ -222,6 +222,10 @@ fun AdListContent(
                         hasQuery = uiState.query.isNotBlank(),
                         hasFilters = uiState.hasActiveFilters,
                         onAddClick = onAddClick,
+                        onResetFilters = {
+                            onFiltersChange(AdFilters())
+                            onCategoryChange(null)
+                        },
                         modifier = Modifier.weight(1f)
                     )
 
@@ -491,6 +495,7 @@ private fun EmptyState(
     hasQuery: Boolean,
     hasFilters: Boolean,
     onAddClick: () -> Unit,
+    onResetFilters: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val isFiltered = hasQuery || hasFilters
@@ -514,6 +519,12 @@ private fun EmptyState(
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
+                if (hasFilters) {
+                    Spacer(Modifier.height(12.dp))
+                    OutlinedButton(onClick = onResetFilters) {
+                        Text(stringResource(R.string.reset_filters))
+                    }
+                }
             } else {
                 Button(onClick = onAddClick) {
                     Text(stringResource(R.string.post_ad))
