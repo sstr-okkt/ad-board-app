@@ -1,6 +1,8 @@
-# AdBoard
+<p align="center">
+  <img src="docs/logo/bzr.png" width="220" alt="BZR">
+</p>
 
-AdBoard is an OLX-style classified ads app for Android, written in Kotlin with Jetpack Compose.
+BZR is an OLX-style classified ads app for Android, written in Kotlin with Jetpack Compose.
 It combines a demo remote feed with ads created locally on the device and works offline,
 because Room is the single source of truth.
 
@@ -56,6 +58,7 @@ because Room is the single source of truth.
 | Local storage | Room (KSP) |
 | Network | Retrofit, OkHttp, kotlinx.serialization |
 | Images | Coil 3 |
+| Branding | Archivo Black (SIL OFL), wordmark in `docs/logo` |
 | DI | Koin |
 | Tests | JUnit 4, kotlinx-coroutines-test, Compose UI Test, AndroidX Test, Room in-memory |
 

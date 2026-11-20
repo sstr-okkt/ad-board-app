@@ -46,6 +46,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -55,6 +57,9 @@ import com.example.adboardapp.model.Ad
 import com.example.adboardapp.model.AdCondition
 import com.example.adboardapp.ui.theme.AdBoardAppTheme
 import org.koin.androidx.compose.koinViewModel
+
+// Brand font of the wordmark
+private val BrandFont = FontFamily(Font(R.font.archivo_black))
 
 // Connects the ViewModel with the stateless screen content
 @Composable
@@ -100,7 +105,12 @@ fun AdListContent(
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
         topBar = {
             TopAppBar(
-                title = { Text(stringResource(R.string.board_title)) },
+                title = {
+                    Text(
+                        text = stringResource(R.string.app_name),
+                        fontFamily = BrandFont
+                    )
+                },
                 actions = {
                     AddAdButton(onClick = onAddClick)
                 }
