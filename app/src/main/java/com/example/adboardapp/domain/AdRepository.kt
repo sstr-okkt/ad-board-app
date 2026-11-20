@@ -1,6 +1,7 @@
 package com.example.adboardapp.domain
 
 import com.example.adboardapp.model.Ad
+import com.example.adboardapp.model.AdStatus
 import com.example.adboardapp.model.Result
 import kotlinx.coroutines.flow.Flow
 
@@ -30,4 +31,13 @@ interface AdRepository {
 
     // Removes a user ad with all its photos
     suspend fun deleteAd(id: Int): Result<Unit>
+
+    // Streams the ads created on this device
+    fun observeLocalAds(): Flow<List<Ad>>
+
+    // Streams the favorite ads
+    fun observeFavorites(): Flow<List<Ad>>
+
+    // Changes the status of a user ad
+    suspend fun updateStatus(id: Int, status: AdStatus): Result<Unit>
 }

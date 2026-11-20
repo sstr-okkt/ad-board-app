@@ -79,4 +79,28 @@ class AdRepositoryImpl(
     } catch (e: Exception) {
         Result.Error("Не вдалося видалити оголошення: ${e.message ?: "невідома помилка"}")
     }
+
+    override fun observeLocalAds(): Flow<List<Ad>> =
+        dao.observeBySource(AdSource.LOCAL.name).map { rows ->
+            rows.map { it.toDomain() }
+        }
+
+    override fun observeFavorites(): Flow<List<Ad>> =
+        dao.observeFavorites().map { rows -> rows.map { it.toDomain() } }
+
+    override suspend fun updateStatus(id: Int, status: AdStatus): Result<Unit> = try {
+        val row = dao.getById(id)?.ad
+            ?: return Result.Error("Оголошення не знайдено")
+
+        val publishedAt = if (status == AdStatus.PUBLISHED) {
+            row.publishedAt ?: LocalDate.now().toString()
+        } else {
+            row.publishedAt
+        }
+
+        dao.update(row.copy(status = status.name, publishedAt = publishedAt))
+        Result.Success(Unit)
+    } catch (e: Exception) {
+        Result.Error("Не вдалося змінити статус: ${e.message ?: "невідома помилка"}")
+    }
 }

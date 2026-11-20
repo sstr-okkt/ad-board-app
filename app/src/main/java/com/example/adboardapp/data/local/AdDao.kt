@@ -62,14 +62,27 @@ abstract class AdDao {
     @Query("SELECT MIN(id) FROM ads WHERE id < 0")
     abstract suspend fun minLocalId(): Int?
 
+    @Query("SELECT id, views, isFavorite FROM ads WHERE source = 'REMOTE'")
+    abstract suspend fun remoteStates(): List<AdStateRow>
+
     // Local ads get negative ids so they never clash with the remote ones
     suspend fun nextLocalId(): Int = (minLocalId() ?: 0) - 1
 
     // Replaces the network part of the cache and keeps the user ads
     @Transaction
     open suspend fun replaceRemote(ads: List<AdEntity>, images: List<AdImageEntity>) {
+        // Favorites and views belong to the user, the network must not reset them
+        val states = remoteStates().associateBy { it.id }
         deleteRemote()
-        insertAll(ads)
+        insertAll(
+            ads.map { ad ->
+                val state = states[ad.id]
+                if (state == null) ad else ad.copy(
+                    views = state.views,
+                    isFavorite = state.isFavorite
+                )
+            }
+        )
         insertImages(images)
     }
 
