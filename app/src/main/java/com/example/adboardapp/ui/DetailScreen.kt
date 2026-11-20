@@ -3,6 +3,7 @@ package com.example.adboardapp.ui
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -364,7 +365,7 @@ private fun PhotoGallery(
     Box(
         modifier = modifier
             .clip(RoundedCornerShape(16.dp))
-            .background(MaterialTheme.colorScheme.surfaceVariant),
+            .background(MaterialTheme.colorScheme.surfaceContainer),
         contentAlignment = Alignment.Center
     ) {
         if (urls.isEmpty()) {
@@ -411,7 +412,8 @@ private fun PhotoGallery(
 private fun SellerCard(ad: Ad) {
     Surface(
         shape = RoundedCornerShape(16.dp),
-        tonalElevation = 2.dp,
+        color = MaterialTheme.colorScheme.surface,
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
         modifier = Modifier.fillMaxWidth()
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
