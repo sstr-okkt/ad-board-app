@@ -59,13 +59,19 @@ class DetailViewModel(
         load()
     }
 
-    private fun load() {
-        viewModelScope.launch { incrementViews(adId) }
+    private var viewsCounted = false
 
+    private fun load() {
         observeJob = viewModelScope.launch {
             observeAd(adId).collect { ad ->
                 // Deletion is handled by the delete callback, not by the empty flow
                 if (_uiState.value.isDeleted) return@collect
+
+                // One view per visit, own ads are not counted
+                if (ad != null && !viewsCounted) {
+                    viewsCounted = true
+                    if (!ad.isLocal) viewModelScope.launch { incrementViews(adId) }
+                }
 
                 _uiState.value = if (ad == null) {
                     DetailUiState(
