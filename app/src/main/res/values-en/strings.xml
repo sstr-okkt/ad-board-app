@@ -49,7 +49,7 @@
     <string name="nothing_found">Nothing found</string>
     <string name="filtered_hint">Try changing the query or filters</string>
     <string name="no_ads">No ads on the board yet</string>
-    <string name="post_ad">Post an ad</string>
+    <string name="post_ad">New ad</string>
     <string name="sort_newest">Newest</string>
     <string name="sort_cheapest">Cheapest</string>
     <string name="sort_expensive">Most expensive</string>
