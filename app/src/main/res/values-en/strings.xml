@@ -2,7 +2,7 @@
     <string name="app_name">BZR</string>
 
     <!-- Common -->
-    <string name="currency_uah">UAH</string>
+    <string name="currency_uah">₴</string>
     <string name="date_today">Today</string>
     <string name="date_yesterday">Yesterday</string>
     <string name="date_draft">draft</string>

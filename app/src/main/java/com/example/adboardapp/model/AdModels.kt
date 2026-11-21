@@ -50,7 +50,7 @@ data class Ad(
     // True for ads created on this device
     val isLocal: Boolean get() = source == AdSource.LOCAL
 
-    // Adds thousand separators: 18500.0 -> "18 500 грн"
+    // Adds thousand separators: 18500.0 -> "18 500 ₴"
     fun formattedPrice(currency: String): String {
         val grouped = price.toLong().toString()
             .reversed()
