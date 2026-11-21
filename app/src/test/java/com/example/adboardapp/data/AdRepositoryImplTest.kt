@@ -163,9 +163,6 @@ class AdRepositoryImplTest {
             failure?.let { throw it }
             return ProductsResponse(products)
         }
-
-        override suspend fun getProduct(id: Int): ProductDto =
-            products.first { it.id == id }
     }
 
     private class FakeAdDao : AdDao() {
