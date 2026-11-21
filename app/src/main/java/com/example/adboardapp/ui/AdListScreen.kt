@@ -285,16 +285,18 @@ fun AdListContent(
                                     onFavoriteClick = { onFavoriteClick(ad.id) }
                                 )
                             }
+
+                            if (uiState.pageCount > 1) {
+                                item {
+                                    PageBar(
+                                        page = uiState.currentPage,
+                                        pageCount = uiState.pageCount,
+                                        onPageChange = onPageChange
+                                    )
+                                }
+                            }
                         }
                     }
-                }
-
-                if (!uiState.isLoading && uiState.pageCount > 1) {
-                    PageBar(
-                        page = uiState.currentPage,
-                        pageCount = uiState.pageCount,
-                        onPageChange = onPageChange
-                    )
                 }
             }
         }
@@ -321,7 +323,7 @@ private fun PageBar(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 8.dp, vertical = 4.dp),
+            .padding(horizontal = 8.dp, vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         TextButton(
