@@ -387,7 +387,11 @@ private fun PhotoGallery(
             ) { page ->
                 AsyncImage(
                     model = urls[page],
-                    contentDescription = null,
+                    contentDescription = stringResource(
+                        R.string.photo_counter,
+                        page + 1,
+                        urls.size
+                    ),
                     contentScale = ContentScale.Crop,
                     modifier = Modifier.fillMaxSize()
                 )

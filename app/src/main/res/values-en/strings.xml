@@ -7,6 +7,9 @@
     <string name="date_yesterday">Yesterday</string>
     <string name="date_draft">draft</string>
     <string name="photo_missing">no photo</string>
+    <string name="photo_counter">Photo %1$d of %2$d</string>
+    <string name="favorite_add">Add to favorites</string>
+    <string name="favorite_remove">Remove from favorites</string>
     <string name="back">Back</string>
     <string name="cancel">Cancel</string>
     <string name="delete">Delete</string>

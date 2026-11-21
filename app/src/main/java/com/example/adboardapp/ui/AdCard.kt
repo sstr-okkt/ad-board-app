@@ -148,7 +148,9 @@ internal fun FavoriteButton(
     IconButton(onClick = onClick) {
         Icon(
             imageVector = if (isFavorite) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
-            contentDescription = null,
+            contentDescription = stringResource(
+                if (isFavorite) R.string.favorite_remove else R.string.favorite_add
+            ),
             tint = if (isFavorite) {
                 Color(0xFFE91E63)
             } else {
