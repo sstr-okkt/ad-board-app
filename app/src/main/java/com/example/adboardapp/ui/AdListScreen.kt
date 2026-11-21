@@ -40,6 +40,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -255,17 +256,23 @@ fun AdListContent(
                         modifier = Modifier.weight(1f)
                     )
 
-                    else -> LazyColumn(
-                        modifier = Modifier.weight(1f),
-                        contentPadding = PaddingValues(16.dp),
-                        verticalArrangement = Arrangement.spacedBy(12.dp)
+                    else -> PullToRefreshBox(
+                        isRefreshing = uiState.isRefreshing,
+                        onRefresh = onRetry,
+                        modifier = Modifier.weight(1f)
                     ) {
-                        items(items = uiState.visibleAds, key = { it.id }) { ad ->
-                            AdCard(
-                                ad = ad,
-                                onClick = { onAdClick(ad) },
-                                onFavoriteClick = { onFavoriteClick(ad.id) }
-                            )
+                        LazyColumn(
+                            modifier = Modifier.fillMaxSize(),
+                            contentPadding = PaddingValues(16.dp),
+                            verticalArrangement = Arrangement.spacedBy(12.dp)
+                        ) {
+                            items(items = uiState.visibleAds, key = { it.id }) { ad ->
+                                AdCard(
+                                    ad = ad,
+                                    onClick = { onAdClick(ad) },
+                                    onFavoriteClick = { onFavoriteClick(ad.id) }
+                                )
+                            }
                         }
                     }
                 }

@@ -19,6 +19,7 @@ data class ListUiState(
     val sort: AdSort = AdSort.NEWEST,
     val filters: AdFilters = AdFilters(),
     val isLoading: Boolean = true,
+    val isRefreshing: Boolean = false,
     val syncError: Boolean = false
 ) {
     // Categories available on the board

@@ -11,6 +11,7 @@ import com.example.adboardapp.model.AdStatus
 import com.example.adboardapp.model.Author
 import com.example.adboardapp.model.ErrorReason
 import com.example.adboardapp.model.Result
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -66,6 +67,18 @@ class ListViewModelTest {
     }
 
     @Test
+    fun refreshShowsThePullIndicator() = runTest {
+        val viewModel = viewModel()
+        repository.refreshGate = CompletableDeferred()
+
+        viewModel.refresh()
+        assertTrue(viewModel.uiState.value.isRefreshing)
+
+        repository.refreshGate?.complete(Unit)
+        assertFalse(viewModel.uiState.value.isRefreshing)
+    }
+
+    @Test
     fun favoriteClickCallsUseCase() = runTest {
         repository.ads.value = listOf(ad(7))
         val viewModel = viewModel()
@@ -103,6 +116,7 @@ class ListViewModelTest {
     private class FakeAdRepository : AdRepository {
         val ads = MutableStateFlow<List<Ad>>(emptyList())
         var refreshResult: Result<Unit> = Result.Success(Unit)
+        var refreshGate: CompletableDeferred<Unit>? = null
         var refreshCalls = 0
         var toggledId: Int? = null
 
@@ -110,6 +124,7 @@ class ListViewModelTest {
 
         override suspend fun refresh(): Result<Unit> {
             refreshCalls++
+            refreshGate?.await()
             return refreshResult
         }
 

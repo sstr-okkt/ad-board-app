@@ -67,10 +67,14 @@ class ListViewModel(
     // Called on start and from the retry button
     fun refresh() {
         viewModelScope.launch {
+            // The full screen spinner covers the first load, the pull indicator the later ones
+            _uiState.update { it.copy(isRefreshing = !it.isLoading) }
             when (refreshAds()) {
-                is Result.Success -> _uiState.update { it.copy(syncError = false) }
+                is Result.Success -> _uiState.update {
+                    it.copy(syncError = false, isRefreshing = false)
+                }
                 is Result.Error -> _uiState.update {
-                    it.copy(isLoading = false, syncError = true)
+                    it.copy(isLoading = false, syncError = true, isRefreshing = false)
                 }
             }
         }
