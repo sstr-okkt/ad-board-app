@@ -10,6 +10,7 @@ import com.example.adboardapp.model.AdCondition
 import com.example.adboardapp.model.AdSource
 import com.example.adboardapp.model.AdStatus
 import com.example.adboardapp.model.Author
+import java.time.LocalDate
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
@@ -27,7 +28,8 @@ class AdMappersTest {
         images: List<String> = listOf(
             "https://example.com/1.jpg",
             "https://example.com/2.jpg"
-        )
+        ),
+        meta: MetaDto? = MetaDto("2026-01-01T00:00:00Z")
     ) = ProductDto(
         id = id,
         title = title,
@@ -37,7 +39,7 @@ class AdMappersTest {
         brand = "Samsung",
         thumbnail = thumbnail,
         images = images,
-        meta = MetaDto("2026-01-01T00:00:00Z"),
+        meta = meta,
         reviews = listOf(ReviewDto("Avery", 4.5))
     )
 
@@ -56,6 +58,15 @@ class AdMappersTest {
         assertTrue(entity.description.contains("phone"))
         assertTrue(entity.authorContact.orEmpty().startsWith("+380"))
         assertTrue(entity.views > 0)
+        assertEquals("2026-01-01", entity.publishedAt)
+    }
+
+    @Test
+    fun missingCreationDateFallsBackToARecentDate() {
+        val entity = dto(id = 1, meta = null).toEntity()
+
+        val published = LocalDate.parse(entity.publishedAt)
+        assertTrue(published in LocalDate.now().minusDays(30L)..LocalDate.now())
     }
 
     @Test

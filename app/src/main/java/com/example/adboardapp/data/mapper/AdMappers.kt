@@ -41,7 +41,7 @@ fun ProductDto.toEntity(): AdEntity {
         authorName = sellerNames[id % sellerNames.size],
         authorRating = reviewer?.rating?.takeIf { it > 0.0 } ?: (4.0 + (id % 10) / 10.0),
         authorContact = phoneFor(id),
-        publishedAt = LocalDate.now().minusDays((id % 30).toLong()).toString(),
+        publishedAt = publishedDate(this),
         source = AdSource.REMOTE.name,
         isFavorite = false
     )
@@ -101,6 +101,13 @@ fun Ad.toEntity(): AdEntity = AdEntity(
     source = source.name,
     isFavorite = isFavorite
 )
+
+// Publication date reported by the API, a recent date when it is missing
+private fun publishedDate(dto: ProductDto): String =
+    dto.meta?.createdAt
+        ?.take(10)
+        ?.takeIf { runCatching { LocalDate.parse(it) }.isSuccess }
+        ?: LocalDate.now().minusDays((dto.id % 30).toLong()).toString()
 
 // Short ad text built from the product data
 private fun descriptionFor(dto: ProductDto, isNew: Boolean, city: String): String =
