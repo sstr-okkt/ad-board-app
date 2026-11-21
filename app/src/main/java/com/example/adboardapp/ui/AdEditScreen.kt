@@ -71,8 +71,8 @@ import com.example.adboardapp.model.AdCondition
 import com.example.adboardapp.model.adCategories
 import com.example.adboardapp.model.adCities
 import com.example.adboardapp.ui.theme.AdBoardAppTheme
-import com.example.adboardapp.ui.theme.ButtonRed
-import com.example.adboardapp.ui.theme.ButtonRedDark
+import com.example.adboardapp.ui.theme.ButtonGray
+import com.example.adboardapp.ui.theme.ButtonGrayDark
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -200,7 +200,7 @@ fun AdEditContent(
                     ActionButton(
                         text = stringResource(R.string.back),
                         onClick = onBack,
-                        containerColor = if (isDark) ButtonRedDark else ButtonRed,
+                        containerColor = if (isDark) ButtonGrayDark else ButtonGray,
                         modifier = Modifier.padding(start = 8.dp)
                     )
                 }

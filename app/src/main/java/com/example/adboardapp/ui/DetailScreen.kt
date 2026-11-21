@@ -60,8 +60,8 @@ import com.example.adboardapp.R
 import com.example.adboardapp.model.Ad
 import com.example.adboardapp.model.AdCondition
 import com.example.adboardapp.ui.theme.AdBoardAppTheme
-import com.example.adboardapp.ui.theme.ButtonRed
-import com.example.adboardapp.ui.theme.ButtonRedDark
+import com.example.adboardapp.ui.theme.ButtonGray
+import com.example.adboardapp.ui.theme.ButtonGrayDark
 
 // Connects the ViewModel with the stateless details content
 @Composable
@@ -145,7 +145,7 @@ fun DetailContent(
                     ActionButton(
                         text = stringResource(R.string.back),
                         onClick = onBack,
-                        containerColor = if (isDark) ButtonRedDark else ButtonRed,
+                        containerColor = if (isDark) ButtonGrayDark else ButtonGray,
                         modifier = Modifier.padding(start = 8.dp)
                     )
                 },

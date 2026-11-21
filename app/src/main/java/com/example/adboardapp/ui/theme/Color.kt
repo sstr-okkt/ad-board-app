@@ -87,6 +87,6 @@ val DarkInverseOnSurface = Color(0xFF2F3033)
 // Green action button
 val ButtonGreen = Color(0xFF2E7D32)
 
-// Red action button
-val ButtonRed = Color(0xFFC62828)
-val ButtonRedDark = Color(0xFFE53935)
+// Neutral action button
+val ButtonGray = Color(0xFF616161)
+val ButtonGrayDark = Color(0xFF424242)
