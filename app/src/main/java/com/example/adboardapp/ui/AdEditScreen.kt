@@ -55,6 +55,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -70,6 +71,8 @@ import com.example.adboardapp.model.AdCondition
 import com.example.adboardapp.model.adCategories
 import com.example.adboardapp.model.adCities
 import com.example.adboardapp.ui.theme.AdBoardAppTheme
+import com.example.adboardapp.ui.theme.ButtonRed
+import com.example.adboardapp.ui.theme.ButtonRedDark
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -193,9 +196,13 @@ fun AdEditContent(
                     )
                 },
                 navigationIcon = {
-                    TextButton(onClick = onBack) {
-                        Text(stringResource(R.string.back))
-                    }
+                    val isDark = MaterialTheme.colorScheme.background.luminance() < 0.5f
+                    ActionButton(
+                        text = stringResource(R.string.back),
+                        onClick = onBack,
+                        containerColor = if (isDark) ButtonRedDark else ButtonRed,
+                        modifier = Modifier.padding(start = 8.dp)
+                    )
                 }
             )
         }
