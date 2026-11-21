@@ -10,11 +10,13 @@ import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -24,6 +26,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.adboardapp.R
+import com.example.adboardapp.ui.theme.BrandHoney
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -134,30 +137,42 @@ private fun BottomBar(
     currentRoute: String?,
     onSelect: (String) -> Unit
 ) {
-    NavigationBar {
+    val itemColors = NavigationBarItemDefaults.colors(
+        selectedIconColor = Color(0xFF1B1C1F),
+        selectedTextColor = Color(0xFF1B1C1F),
+        indicatorColor = Color(0xFFF8F8F9),
+        unselectedIconColor = Color(0xFF3E2723),
+        unselectedTextColor = Color(0xFF3E2723)
+    )
+
+    NavigationBar(containerColor = BrandHoney) {
         NavigationBarItem(
             selected = currentRoute == LIST_ROUTE,
             onClick = { onSelect(LIST_ROUTE) },
             icon = { Icon(Icons.Filled.Search, contentDescription = null) },
-            label = { Text(stringResource(R.string.nav_search)) }
+            label = { Text(stringResource(R.string.nav_search)) },
+            colors = itemColors
         )
         NavigationBarItem(
             selected = currentRoute == MY_ROUTE,
             onClick = { onSelect(MY_ROUTE) },
             icon = { Icon(Icons.Filled.Person, contentDescription = null) },
-            label = { Text(stringResource(R.string.nav_my)) }
+            label = { Text(stringResource(R.string.nav_my)) },
+            colors = itemColors
         )
         NavigationBarItem(
             selected = currentRoute == FAVORITES_ROUTE,
             onClick = { onSelect(FAVORITES_ROUTE) },
             icon = { Icon(Icons.Filled.Favorite, contentDescription = null) },
-            label = { Text(stringResource(R.string.nav_favorites)) }
+            label = { Text(stringResource(R.string.nav_favorites)) },
+            colors = itemColors
         )
         NavigationBarItem(
             selected = currentRoute == SETTINGS_ROUTE,
             onClick = { onSelect(SETTINGS_ROUTE) },
             icon = { Icon(Icons.Filled.Settings, contentDescription = null) },
-            label = { Text(stringResource(R.string.nav_settings)) }
+            label = { Text(stringResource(R.string.nav_settings)) },
+            colors = itemColors
         )
     }
 }

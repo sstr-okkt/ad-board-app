@@ -1,6 +1,7 @@
 package com.example.adboardapp.ui
 
 import androidx.annotation.StringRes
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -86,7 +87,8 @@ fun SettingsContent(
 
                 Surface(
                     shape = RoundedCornerShape(16.dp),
-                    tonalElevation = 1.dp,
+                    color = MaterialTheme.colorScheme.surface,
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Column {
@@ -112,7 +114,8 @@ fun SettingsContent(
 
                 Surface(
                     shape = RoundedCornerShape(16.dp),
-                    tonalElevation = 1.dp,
+                    color = MaterialTheme.colorScheme.surface,
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Column {

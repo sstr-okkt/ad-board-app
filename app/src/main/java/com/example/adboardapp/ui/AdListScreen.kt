@@ -49,6 +49,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
@@ -64,6 +65,7 @@ import com.example.adboardapp.R
 import com.example.adboardapp.model.Ad
 import com.example.adboardapp.model.AdCondition
 import com.example.adboardapp.ui.theme.AdBoardAppTheme
+import com.example.adboardapp.ui.theme.BrandHoney
 import org.koin.androidx.compose.koinViewModel
 
 // Brand font of the wordmark
@@ -108,6 +110,7 @@ fun AdListContent(
 ) {
     var showFilters by remember { mutableStateOf(false) }
     val keyboardController = LocalSoftwareKeyboardController.current
+    val isDark = MaterialTheme.colorScheme.background.luminance() < 0.5f
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
@@ -120,6 +123,7 @@ fun AdListContent(
                         fontFamily = BrandFont,
                         fontSize = 40.sp,
                         lineHeight = 40.sp,
+                        color = if (isDark) BrandHoney else MaterialTheme.colorScheme.onSurface,
                         modifier = Modifier.height(40.dp)
                     )
                 },
