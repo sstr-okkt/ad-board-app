@@ -33,7 +33,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -43,7 +42,6 @@ import com.example.adboardapp.model.Ad
 import com.example.adboardapp.model.AdStatus
 import com.example.adboardapp.ui.theme.AdBoardAppTheme
 import com.example.adboardapp.ui.theme.ButtonGreen
-import com.example.adboardapp.ui.theme.ButtonGreenDark
 import org.koin.androidx.compose.koinViewModel
 
 // My ads with the active, draft and archived tabs
@@ -265,11 +263,10 @@ private fun EmptyMyAds(
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
             Spacer(Modifier.height(12.dp))
-            val isDark = MaterialTheme.colorScheme.background.luminance() < 0.5f
             ActionButton(
                 text = stringResource(R.string.post_ad),
                 onClick = onAddClick,
-                containerColor = if (isDark) ButtonGreenDark else ButtonGreen
+                containerColor = ButtonGreen
             )
         }
     }
