@@ -17,27 +17,34 @@ because Room is the single source of truth.
 
 <p align="center">
   <img src="docs/screenshots/details.png" width="240" alt="Ad details">
+  <img src="docs/screenshots/photo_viewer.png" width="240" alt="Photo viewer">
   <img src="docs/screenshots/edit_form.png" width="240" alt="Create ad">
-  <img src="docs/screenshots/my_ads.png" width="240" alt="My ads">
 </p>
-<p align="center"><sub>Ad details · Create ad · My ads</sub></p>
+<p align="center"><sub>Ad details · Full screen photo · Create ad</sub></p>
 
 <p align="center">
+  <img src="docs/screenshots/my_ads.png" width="240" alt="My ads">
   <img src="docs/screenshots/favorites.png" width="240" alt="Favorites">
   <img src="docs/screenshots/filters.png" width="240" alt="Filters">
+</p>
+<p align="center"><sub>My ads · Favorites · Filters</sub></p>
+
+<p align="center">
   <img src="docs/screenshots/offline.png" width="240" alt="Offline mode">
 </p>
-<p align="center"><sub>Favorites · Filters · Offline mode</sub></p>
+<p align="center"><sub>Offline mode</sub></p>
 
 ## Features
 
-- Ad feed with photos, price, title, city, publish date and view counter.
+- Ad feed with photos, price in hryvnia, title, city, publish date and view counter.
 - Search by title, description, city and category, with a clear action and keyboard search.
 - Category chips, sorting (newest, cheapest, most expensive) and filters:
   city, price range, condition, "photos only"; filters can be reset from the sheet
   or from the empty state.
-- Ad details with a swipeable photo gallery, description, seller block, phone reveal,
-  share sheet, favorite toggle and view counter.
+- Pull to refresh reloads the feed; the offline banner keeps cached ads on screen.
+- Ad details with a swipeable photo gallery, a full screen viewer for every photo,
+  description, seller block with a star rating, phone reveal, share sheet,
+  favorite toggle and view counter.
 - Creating and editing ads: up to 5 photos from the gallery, validation,
   draft and publish actions; duplicate submits are blocked and unsaved changes are confirmed.
 - Phone numbers are entered and displayed as `+380 XX XXX XX XX`.
@@ -45,6 +52,7 @@ because Room is the single source of truth.
 - Favorites.
 - Offline-first: the cached list stays available, a banner explains the missing connection,
   and user ads are never overwritten by a network refresh.
+- Views grow once per visit; ads created on the device are not counted.
 - Light and dark themes with a System / Light / Dark switch in Settings, saved between launches.
 - Ukrainian and English interface with a language switch in Settings; categories and cities
   are stored as language-neutral keys and translated on the screen.
@@ -105,7 +113,7 @@ app/src/main/java/com/example/adboardapp
 │   ├── local        Room entities, DAO, database
 │   ├── mapper       DTO and entity mappers
 │   ├── remote       Retrofit API and DTOs
-│   ├── settings     theme preference
+│   ├── settings     theme and language preferences
 │   └── AdRepositoryImpl.kt
 ├── di               Koin modules
 ├── domain           repository contract and use cases
@@ -145,12 +153,19 @@ Instrumented tests (need a connected device or emulator):
 
 Coverage:
 
-- `AdMappersTest` — DTO/entity/domain mapping, photo order, price conversion;
+- `AdMappersTest` — DTO/entity/domain mapping, photo order, price conversion, real creation date,
+  average seller rating;
 - `ListUiStateTest` — search, category, city, price, condition, photo filter and sorting;
 - `AdRepositoryImplTest` — refresh success and failure, local IDs, favorites, status changes;
-- `ListViewModelTest` — initial load, draft filtering, search, sync error, favorite action;
+- `ListViewModelTest` — initial load, draft filtering, search, sync error, favorite action,
+  pull-to-refresh indicator;
+- `DetailViewModelTest` — one view per visit, own ads are not counted, missing ad state;
+- `RatingStarsTest` — rounding of the seller rating to whole stars;
+- `PhoneFormatTest` — full, local and partly typed phone numbers;
 - `AdDaoTest` — refresh keeps favorites and views, local ads survive sync, cascade delete;
 - `AdListContentTest` — list rendering, search filtering and category chip callback.
+
+The suite currently contains 39 unit tests and 6 instrumented tests.
 
 ## Release build
 
