@@ -8,6 +8,7 @@
     <string name="date_draft">чернетка</string>
     <string name="photo_missing">немає фото</string>
     <string name="photo_counter">Фото %1$d з %2$d</string>
+    <string name="close_photo">Закрити</string>
     <string name="favorite_add">Додати в обране</string>
     <string name="favorite_remove">Прибрати з обраного</string>
     <string name="back">Назад</string>

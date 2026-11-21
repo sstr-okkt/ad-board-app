@@ -5,6 +5,7 @@ import android.content.Intent
 import android.net.Uri
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -235,6 +236,7 @@ private fun DetailBody(
 ) {
     val context = LocalContext.current
     var phoneVisible by rememberSaveable(ad.id) { mutableStateOf(false) }
+    var viewerPage by rememberSaveable(ad.id) { mutableStateOf<Int?>(null) }
     val currency = stringResource(R.string.currency_uah)
     val shareChooserTitle = stringResource(R.string.share_chooser)
     val city = cityLabel(ad.city)
@@ -248,6 +250,7 @@ private fun DetailBody(
     ) {
         PhotoGallery(
             urls = ad.imageUrls,
+            onPhotoClick = { page -> viewerPage = page },
             modifier = Modifier
                 .fillMaxWidth()
                 .height(320.dp)
@@ -367,12 +370,21 @@ private fun DetailBody(
 
         Spacer(Modifier.height(24.dp))
     }
+
+    viewerPage?.let { page ->
+        PhotoViewer(
+            urls = ad.imageUrls,
+            startPage = page,
+            onDismiss = { viewerPage = null }
+        )
+    }
 }
 
-// Swipeable gallery of the ad photos
+// Swipeable gallery of the ad photos, a tap opens the full screen viewer
 @Composable
 private fun PhotoGallery(
     urls: List<String>,
+    onPhotoClick: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Box(
@@ -402,7 +414,9 @@ private fun PhotoGallery(
                         urls.size
                     ),
                     contentScale = ContentScale.Crop,
-                    modifier = Modifier.fillMaxSize()
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .clickable { onPhotoClick(page) }
                 )
             }
 
