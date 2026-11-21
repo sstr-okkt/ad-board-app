@@ -35,6 +35,6 @@ class AdBoardApp : Application(), SingletonImageLoader.Factory {
     // Smooth image appearance across all screens
     override fun newImageLoader(context: PlatformContext): ImageLoader =
         ImageLoader.Builder(context)
-            .crossfade(150)
+            .crossfade(100)
             .build()
 }
