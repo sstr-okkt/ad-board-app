@@ -63,6 +63,24 @@ class ListUiStateTest {
     }
 
     @Test
+    fun splitsTheListIntoPagesOfTen() {
+        val many = (1..25).map {
+            ad(it, "Ad $it", 100.0, "kyiv", "smartphones", AdCondition.USED, emptyList(), "2026-11-01")
+        }
+        val first = ListUiState(ads = many, isLoading = false)
+
+        assertEquals(3, first.pageCount)
+        assertEquals(10, first.pageAds.size)
+        assertEquals(1, first.pageAds.first().id)
+
+        val last = first.copy(page = 2)
+        assertEquals(5, last.pageAds.size)
+        assertEquals(21, last.pageAds.first().id)
+
+        assertEquals(2, first.copy(page = 99).currentPage)
+    }
+
+    @Test
     fun searchFindsByCityAndCategory() {
         assertEquals(listOf(2), state(query = "kyiv").visibleAds.map { it.id })
         assertEquals(listOf(2), state(query = "Київ").visibleAds.map { it.id })

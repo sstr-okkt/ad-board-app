@@ -48,6 +48,8 @@
     <string name="offline_banner">No connection. Showing saved data</string>
     <string name="retry">Retry</string>
     <string name="found_count">Found %1$d of %2$d</string>
+    <string name="page_indicator">%1$d of %2$d</string>
+    <string name="page_next">Next</string>
     <string name="filters">Filters</string>
     <string name="filters_with_count">Filters (%1$d)</string>
     <string name="all">All</string>

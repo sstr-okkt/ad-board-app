@@ -41,22 +41,27 @@ class ListViewModel(
 
     // Called from the search field
     fun onQueryChange(query: String) {
-        _uiState.update { it.copy(query = query) }
+        _uiState.update { it.copy(query = query, page = 0) }
     }
 
     // Called from the category chips
     fun onCategoryChange(category: String?) {
-        _uiState.update { it.copy(selectedCategory = category) }
+        _uiState.update { it.copy(selectedCategory = category, page = 0) }
     }
 
     // Called from the sort menu
     fun onSortChange(sort: AdSort) {
-        _uiState.update { it.copy(sort = sort) }
+        _uiState.update { it.copy(sort = sort, page = 0) }
     }
 
     // Called from the filters sheet
     fun onFiltersChange(filters: AdFilters) {
-        _uiState.update { it.copy(filters = filters) }
+        _uiState.update { it.copy(filters = filters, page = 0) }
+    }
+
+    // Called from the page bar under the list
+    fun onPageChange(page: Int) {
+        _uiState.update { it.copy(page = page) }
     }
 
     // Called from the heart on the card

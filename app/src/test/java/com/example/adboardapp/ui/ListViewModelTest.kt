@@ -79,6 +79,28 @@ class ListViewModelTest {
     }
 
     @Test
+    fun pageChangeShowsTheRequestedPage() = runTest {
+        repository.ads.value = (1..15).map { ad(it) }
+        val viewModel = viewModel()
+
+        viewModel.onPageChange(1)
+
+        assertEquals(1, viewModel.uiState.value.currentPage)
+        assertEquals(5, viewModel.uiState.value.pageAds.size)
+    }
+
+    @Test
+    fun searchResetsThePage() = runTest {
+        repository.ads.value = (1..15).map { ad(it) }
+        val viewModel = viewModel()
+        viewModel.onPageChange(1)
+
+        viewModel.onQueryChange("Ad")
+
+        assertEquals(0, viewModel.uiState.value.page)
+    }
+
+    @Test
     fun favoriteClickCallsUseCase() = runTest {
         repository.ads.value = listOf(ad(7))
         val viewModel = viewModel()

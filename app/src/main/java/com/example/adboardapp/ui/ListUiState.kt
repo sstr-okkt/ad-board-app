@@ -4,6 +4,9 @@ import com.example.adboardapp.model.Ad
 import com.example.adboardapp.model.categorySearchNames
 import com.example.adboardapp.model.citySearchNames
 
+// Ads are shown in pages of ten
+const val PAGE_SIZE = 10
+
 // Sort order of the ad list
 enum class AdSort {
     NEWEST,
@@ -18,6 +21,7 @@ data class ListUiState(
     val selectedCategory: String? = null,
     val sort: AdSort = AdSort.NEWEST,
     val filters: AdFilters = AdFilters(),
+    val page: Int = 0,
     val isLoading: Boolean = true,
     val isRefreshing: Boolean = false,
     val syncError: Boolean = false
@@ -50,6 +54,18 @@ data class ListUiState(
                     AdSort.EXPENSIVE -> list.sortedByDescending { it.price }
                 }
             }
+
+    // Number of pages in the filtered list, at least one
+    val pageCount: Int
+        get() = maxOf(1, (visibleAds.size + PAGE_SIZE - 1) / PAGE_SIZE)
+
+    // Page kept inside the list, the filters can shrink it
+    val currentPage: Int
+        get() = page.coerceIn(0, pageCount - 1)
+
+    // Ads of the current page
+    val pageAds: List<Ad>
+        get() = visibleAds.drop(currentPage * PAGE_SIZE).take(PAGE_SIZE)
 
     // Search looks through the fields a user sees on the card
     private fun matchesQuery(ad: Ad): Boolean {

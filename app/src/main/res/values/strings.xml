@@ -48,6 +48,8 @@
     <string name="offline_banner">Немає з\'єднання. Показано збережені дані</string>
     <string name="retry">Повторити</string>
     <string name="found_count">Знайдено %1$d із %2$d</string>
+    <string name="page_indicator">%1$d з %2$d</string>
+    <string name="page_next">Далі</string>
     <string name="filters">Фільтри</string>
     <string name="filters_with_count">Фільтри (%1$d)</string>
     <string name="all">Усі</string>

@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -44,6 +45,7 @@ import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -58,6 +60,7 @@ import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -90,7 +93,8 @@ fun AdListScreen(
         onAdClick = { ad -> onAdClick(ad.id) },
         onFavoriteClick = viewModel::onFavoriteClick,
         onAddClick = onAddClick,
-        onRetry = viewModel::refresh
+        onRetry = viewModel::refresh,
+        onPageChange = viewModel::onPageChange
     )
 }
 
@@ -107,11 +111,18 @@ fun AdListContent(
     onFavoriteClick: (Int) -> Unit,
     onAddClick: () -> Unit,
     onRetry: () -> Unit,
+    onPageChange: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
     var showFilters by remember { mutableStateOf(false) }
     val keyboardController = LocalSoftwareKeyboardController.current
     val isDark = MaterialTheme.colorScheme.background.luminance() < 0.5f
+    val listState = rememberLazyListState()
+
+    // A new page starts from the first card
+    LaunchedEffect(uiState.currentPage) {
+        if (!uiState.isLoading) listState.scrollToItem(0)
+    }
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
@@ -262,11 +273,12 @@ fun AdListContent(
                         modifier = Modifier.weight(1f)
                     ) {
                         LazyColumn(
+                            state = listState,
                             modifier = Modifier.fillMaxSize(),
                             contentPadding = PaddingValues(16.dp),
                             verticalArrangement = Arrangement.spacedBy(12.dp)
                         ) {
-                            items(items = uiState.visibleAds, key = { it.id }) { ad ->
+                            items(items = uiState.pageAds, key = { it.id }) { ad ->
                                 AdCard(
                                     ad = ad,
                                     onClick = { onAdClick(ad) },
@@ -275,6 +287,14 @@ fun AdListContent(
                             }
                         }
                     }
+                }
+
+                if (!uiState.isLoading && uiState.pageCount > 1) {
+                    PageBar(
+                        page = uiState.currentPage,
+                        pageCount = uiState.pageCount,
+                        onPageChange = onPageChange
+                    )
                 }
             }
         }
@@ -288,6 +308,43 @@ fun AdListContent(
             onApply = onFiltersChange,
             onDismiss = { showFilters = false }
         )
+    }
+}
+
+// Page switcher under the ad list
+@Composable
+private fun PageBar(
+    page: Int,
+    pageCount: Int,
+    onPageChange: (Int) -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 8.dp, vertical = 4.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        TextButton(
+            onClick = { onPageChange(page - 1) },
+            enabled = page > 0
+        ) {
+            Text(stringResource(R.string.back))
+        }
+
+        Text(
+            text = stringResource(R.string.page_indicator, page + 1, pageCount),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.weight(1f)
+        )
+
+        TextButton(
+            onClick = { onPageChange(page + 1) },
+            enabled = page < pageCount - 1
+        ) {
+            Text(stringResource(R.string.page_next))
+        }
     }
 }
 
@@ -593,7 +650,8 @@ private fun AdListContentPreview() {
             onAdClick = {},
             onFavoriteClick = {},
             onAddClick = {},
-            onRetry = {}
+            onRetry = {},
+            onPageChange = {}
         )
     }
 }
