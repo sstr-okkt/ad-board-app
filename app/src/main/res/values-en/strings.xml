@@ -18,7 +18,7 @@
     <string name="share_chooser">Share this ad</string>
     <string name="show_phone">Show phone</string>
     <string name="negotiable">Negotiable</string>
-    <string name="rating_format">Rating: %1$s out of 5.0</string>
+    <string name="rating_stars">Rating: %1$d out of 5</string>
     <string name="seller">Seller</string>
     <string name="you">You</string>
     <string name="description_label">Description</string>

@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.pager.HorizontalPager
@@ -22,12 +23,16 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
@@ -50,6 +55,8 @@ import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -59,7 +66,9 @@ import coil3.compose.AsyncImage
 import com.example.adboardapp.R
 import com.example.adboardapp.model.Ad
 import com.example.adboardapp.model.AdCondition
+import com.example.adboardapp.model.ratingStars
 import com.example.adboardapp.ui.theme.AdBoardAppTheme
+import com.example.adboardapp.ui.theme.BrandHoney
 import com.example.adboardapp.ui.theme.ButtonGray
 import com.example.adboardapp.ui.theme.ButtonGrayDark
 
@@ -437,12 +446,30 @@ private fun SellerCard(ad: Ad) {
                 text = if (ad.isLocal) stringResource(R.string.you) else ad.author.name,
                 style = MaterialTheme.typography.titleMedium
             )
-            if (ad.author.rating > 0.0) {
-                Text(
-                    text = stringResource(R.string.rating_format, ad.author.rating.toString()),
-                    style = MaterialTheme.typography.bodyMedium
-                )
-            }
+            Spacer(Modifier.height(4.dp))
+            RatingStars(ratingStars(ad.author.rating))
+        }
+    }
+}
+
+// Number of stars in the rating row
+private const val MAX_STARS = 5
+
+// Seller rating as five stars, the earned ones filled with the brand honey
+@Composable
+private fun RatingStars(stars: Int) {
+    val description = stringResource(R.string.rating_stars, stars)
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(2.dp),
+        modifier = Modifier.semantics { contentDescription = description }
+    ) {
+        repeat(MAX_STARS) { index ->
+            Icon(
+                imageVector = if (index < stars) Icons.Filled.Star else Icons.Outlined.Star,
+                contentDescription = null,
+                tint = if (index < stars) BrandHoney else MaterialTheme.colorScheme.outline,
+                modifier = Modifier.size(20.dp)
+            )
         }
     }
 }

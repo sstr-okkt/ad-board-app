@@ -18,7 +18,7 @@
     <string name="share_chooser">Поділитися оголошенням</string>
     <string name="show_phone">Показати телефон</string>
     <string name="negotiable">Договірна</string>
-    <string name="rating_format">Рейтинг: %1$s із 5.0</string>
+    <string name="rating_stars">Рейтинг: %1$d з 5</string>
     <string name="seller">Продавець</string>
     <string name="you">Ви</string>
     <string name="description_label">Опис</string>

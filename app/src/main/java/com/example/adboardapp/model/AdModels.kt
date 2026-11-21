@@ -1,5 +1,7 @@
 package com.example.adboardapp.model
 
+import kotlin.math.roundToInt
+
 // Ad state on the board
 enum class AdStatus {
     DRAFT,      // not published yet
@@ -58,6 +60,9 @@ data class Ad(
         return "$grouped $currency"
     }
 }
+
+// Whole stars for the seller rating, 0.5 and above round up
+fun ratingStars(rating: Double): Int = rating.roundToInt().coerceIn(0, 5)
 
 // Kind of a failed operation, translated on the screen
 enum class ErrorReason {
