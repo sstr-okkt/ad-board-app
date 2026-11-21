@@ -11,6 +11,7 @@ import com.example.adboardapp.model.AdSource
 import com.example.adboardapp.model.AdStatus
 import com.example.adboardapp.model.Author
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -55,6 +56,15 @@ class AdMappersTest {
         assertTrue(entity.description.contains("phone"))
         assertTrue(entity.authorContact.orEmpty().startsWith("+380"))
         assertTrue(entity.views > 0)
+    }
+
+    @Test
+    fun descriptionUsesTheLocalizedCityName() {
+        val entity = dto(id = 1).toEntity()
+
+        assertEquals("odesa", entity.city)
+        assertTrue(entity.description.contains("Одеса"))
+        assertFalse(entity.description.contains("odesa"))
     }
 
     @Test
