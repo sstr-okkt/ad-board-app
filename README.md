@@ -17,10 +17,10 @@ because Room is the single source of truth.
 
 <p align="center">
   <img src="docs/screenshots/details.png" width="240" alt="Ad details">
-  <img src="docs/screenshots/edit_form.png" width="240" alt="Create ad">
+  <img src="docs/screenshots/edit_form.png" width="240" alt="Ad form">
   <img src="docs/screenshots/my_ads.png" width="240" alt="My ads">
 </p>
-<p align="center"><sub>Ad details · Create ad · My ads</sub></p>
+<p align="center"><sub>Ad details · Ad form · My ads</sub></p>
 
 <p align="center">
   <img src="docs/screenshots/favorites.png" width="240" alt="Favorites">
@@ -36,7 +36,11 @@ because Room is the single source of truth.
 - Category chips, sorting (newest, cheapest, most expensive) and filters:
   city, price range, condition, "photos only"; filters can be reset from the sheet
   or from the empty state.
+- The feed is split into pages of ten; the page bar appears after the last ad
+  and only when the list has more than ten ads.
 - Pull to refresh reloads the feed; the offline banner keeps cached ads on screen.
+- Demo prices are converted from USD with the official NBU rate, loaded on every sync.
+  The rate and its date are shown in Settings.
 - Ad details with a swipeable photo gallery, a full screen viewer for every photo,
   description, seller block with a star rating, phone reveal, share sheet,
   favorite toggle and view counter.
@@ -148,19 +152,21 @@ Instrumented tests (need a connected device or emulator):
 
 Coverage:
 
-- `AdMappersTest` — DTO/entity/domain mapping, photo order, price conversion, real creation date,
-  average seller rating;
-- `ListUiStateTest` — search, category, city, price, condition, photo filter and sorting;
-- `AdRepositoryImplTest` — refresh success and failure, local IDs, favorites, status changes;
+- `AdMappersTest` — DTO/entity/domain mapping, photo order, price conversion with a rate,
+  real creation date, average seller rating;
+- `ListUiStateTest` — search, category, city, price, condition, photo filter, sorting
+  and pages of ten;
+- `AdRepositoryImplTest` — refresh success and failure, local IDs, favorites, status changes,
+  NBU rate and its fallbacks;
 - `ListViewModelTest` — initial load, draft filtering, search, sync error, favorite action,
-  pull-to-refresh indicator;
+  pull-to-refresh indicator, page reset on search;
 - `DetailViewModelTest` — one view per visit, own ads are not counted, missing ad state;
 - `RatingStarsTest` — rounding of the seller rating to whole stars;
 - `PhoneFormatTest` — full, local and partly typed phone numbers;
 - `AdDaoTest` — refresh keeps favorites and views, local ads survive sync, cascade delete;
 - `AdListContentTest` — list rendering, search filtering and category chip callback.
 
-The suite currently contains 39 unit tests and 6 instrumented tests.
+The suite currently contains 46 unit tests and 6 instrumented tests.
 
 ## Release build
 
@@ -195,8 +201,10 @@ Minification is disabled, so the release APK behaves exactly like the debug buil
 ## Limitations
 
 - The remote feed is a demo product catalog, not a real classifieds service;
-  prices are converted from USD to UAH and locations are generated.
+  prices are converted from USD with the NBU rate, while sellers, phones and locations
+  are generated.
 - User ads exist only on the device that created them. There is no backend, so ads are not
   shared between users.
 - No authentication, chat, moderation, paid promotion or map.
-- No pagination: the feed loads the first 30 items.
+- The network feed itself has no server pagination: one request loads 30 items, and the app
+  pages the cached list by ten.
