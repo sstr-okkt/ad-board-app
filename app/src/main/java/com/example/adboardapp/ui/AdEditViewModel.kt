@@ -105,7 +105,7 @@ class AdEditViewModel(    private val adId: Int,
                     it.copy(isSaved = true, isSaving = false)
                 }
                 is Result.Error -> _uiState.update {
-                    it.copy(saveError = result.message, isSaving = false)
+                    it.copy(saveError = result.reason, isSaving = false)
                 }
             }
         }
@@ -132,7 +132,7 @@ class AdEditViewModel(    private val adId: Int,
                     )
                 }
                 is Result.Error -> _uiState.update {
-                    it.copy(isLoading = false, loadError = result.message)
+                    it.copy(isLoading = false, loadError = result.reason)
                 }
             }
         }

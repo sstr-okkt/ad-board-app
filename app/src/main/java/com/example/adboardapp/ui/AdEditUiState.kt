@@ -1,6 +1,7 @@
 package com.example.adboardapp.ui
 
 import com.example.adboardapp.model.AdCondition
+import com.example.adboardapp.model.ErrorReason
 import com.example.adboardapp.model.adCategories
 import com.example.adboardapp.model.adCities
 
@@ -24,7 +25,7 @@ enum class FieldError {
 data class AdEditUiState(
     val isNew: Boolean = true,
     val isLoading: Boolean = false,
-    val loadError: String? = null,
+    val loadError: ErrorReason? = null,
     val title: String = "",
     val description: String = "",
     val price: String = "",
@@ -39,7 +40,7 @@ data class AdEditUiState(
     val priceError: FieldError? = null,
     val phoneError: FieldError? = null,
     val imageError: FieldError? = null,
-    val saveError: String? = null,
+    val saveError: ErrorReason? = null,
     val isSaving: Boolean = false,
     val isDirty: Boolean = false,
     val isSaved: Boolean = false

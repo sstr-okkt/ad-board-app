@@ -170,7 +170,7 @@ fun DetailContent(
                 CircularProgressIndicator()
             }
 
-            uiState.errorMessage != null -> Box(
+            uiState.errorReason != null -> Box(
                 modifier = Modifier
                     .padding(innerPadding)
                     .fillMaxSize(),
@@ -178,7 +178,7 @@ fun DetailContent(
             ) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Text(
-                        text = uiState.errorMessage,
+                        text = stringResource(errorReasonRes(uiState.errorReason)),
                         color = MaterialTheme.colorScheme.error,
                         modifier = Modifier.padding(horizontal = 24.dp)
                     )

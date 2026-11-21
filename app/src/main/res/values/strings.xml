@@ -33,6 +33,12 @@
     <string name="delete_ad_title">Видалити оголошення?</string>
     <string name="delete_ad_text">Дію не можна скасувати.</string>
 
+    <!-- Data layer errors -->
+    <string name="error_sync">Не вдалося оновити оголошення</string>
+    <string name="error_save">Не вдалося зберегти оголошення</string>
+    <string name="error_delete">Не вдалося видалити оголошення</string>
+    <string name="error_status">Не вдалося змінити статус</string>
+
     <!-- Ad list -->
     <string name="board_title">Дошка оголошень</string>
     <string name="add">Додати</string>

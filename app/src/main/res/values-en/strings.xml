@@ -33,6 +33,12 @@
     <string name="delete_ad_title">Delete this ad?</string>
     <string name="delete_ad_text">This action cannot be undone.</string>
 
+    <!-- Data layer errors -->
+    <string name="error_sync">Couldn\'t refresh the ads</string>
+    <string name="error_save">Couldn\'t save the ad</string>
+    <string name="error_delete">Couldn\'t delete the ad</string>
+    <string name="error_status">Couldn\'t change the status</string>
+
     <!-- Ad list -->
     <string name="board_title">Ad board</string>
     <string name="add">Add</string>

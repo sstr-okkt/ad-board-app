@@ -10,6 +10,7 @@ import com.example.adboardapp.domain.AdRepository
 import com.example.adboardapp.model.Ad
 import com.example.adboardapp.model.AdSource
 import com.example.adboardapp.model.AdStatus
+import com.example.adboardapp.model.ErrorReason
 import com.example.adboardapp.model.Result
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -39,13 +40,13 @@ class AdRepositoryImpl(
         Result.Success(Unit)
     } catch (e: Exception) {
         // User ads stay in the database, only the network part is refreshed
-        Result.Error("Не вдалося синхронізувати оголошення: ${e.message ?: "невідома помилка"}")
+        Result.Error(ErrorReason.SYNC, e.message)
     }
 
     override suspend fun getAdById(id: Int): Result<Ad> =
         dao.getById(id)?.toDomain()
             ?.let { Result.Success(it) }
-            ?: Result.Error("Оголошення не знайдено в кеші")
+            ?: Result.Error(ErrorReason.NOT_FOUND)
 
     override suspend fun toggleFavorite(id: Int) = dao.toggleFavorite(id)
 
@@ -70,14 +71,14 @@ class AdRepositoryImpl(
         )
         Result.Success(id)
     } catch (e: Exception) {
-        Result.Error("Не вдалося зберегти оголошення: ${e.message ?: "невідома помилка"}")
+        Result.Error(ErrorReason.SAVE, e.message)
     }
 
     override suspend fun deleteAd(id: Int): Result<Unit> = try {
         dao.deleteById(id)
         Result.Success(Unit)
     } catch (e: Exception) {
-        Result.Error("Не вдалося видалити оголошення: ${e.message ?: "невідома помилка"}")
+        Result.Error(ErrorReason.DELETE, e.message)
     }
 
     override fun observeLocalAds(): Flow<List<Ad>> =
@@ -90,7 +91,7 @@ class AdRepositoryImpl(
 
     override suspend fun updateStatus(id: Int, status: AdStatus): Result<Unit> = try {
         val row = dao.getById(id)?.ad
-            ?: return Result.Error("Оголошення не знайдено")
+            ?: return Result.Error(ErrorReason.NOT_FOUND)
 
         val publishedAt = if (status == AdStatus.PUBLISHED) {
             row.publishedAt ?: LocalDate.now().toString()
@@ -101,6 +102,6 @@ class AdRepositoryImpl(
         dao.update(row.copy(status = status.name, publishedAt = publishedAt))
         Result.Success(Unit)
     } catch (e: Exception) {
-        Result.Error("Не вдалося змінити статус: ${e.message ?: "невідома помилка"}")
+        Result.Error(ErrorReason.STATUS, e.message)
     }
 }

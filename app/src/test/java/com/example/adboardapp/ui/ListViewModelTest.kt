@@ -9,6 +9,7 @@ import com.example.adboardapp.model.Ad
 import com.example.adboardapp.model.AdCondition
 import com.example.adboardapp.model.AdStatus
 import com.example.adboardapp.model.Author
+import com.example.adboardapp.model.ErrorReason
 import com.example.adboardapp.model.Result
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -57,7 +58,7 @@ class ListViewModelTest {
 
     @Test
     fun refreshErrorShowsSyncBanner() = runTest {
-        repository.refreshResult = Result.Error("no network")
+        repository.refreshResult = Result.Error(ErrorReason.SYNC, "no network")
 
         val state = viewModel().uiState.value
 
@@ -113,7 +114,7 @@ class ListViewModelTest {
         }
 
         override suspend fun getAdById(id: Int): Result<Ad> =
-            Result.Error("not used")
+            Result.Error(ErrorReason.NOT_FOUND)
 
         override fun observeAd(id: Int): Flow<Ad?> =
             ads.map { list -> list.find { it.id == id } }
@@ -125,16 +126,16 @@ class ListViewModelTest {
         override suspend fun incrementViews(id: Int) = Unit
 
         override suspend fun saveAd(ad: Ad, publish: Boolean): Result<Int> =
-            Result.Error("not used")
+            Result.Error(ErrorReason.NOT_FOUND)
 
         override suspend fun deleteAd(id: Int): Result<Unit> =
-            Result.Error("not used")
+            Result.Error(ErrorReason.NOT_FOUND)
 
         override fun observeLocalAds(): Flow<List<Ad>> = ads
 
         override fun observeFavorites(): Flow<List<Ad>> = ads
 
         override suspend fun updateStatus(id: Int, status: AdStatus): Result<Unit> =
-            Result.Error("not used")
+            Result.Error(ErrorReason.NOT_FOUND)
     }
 }

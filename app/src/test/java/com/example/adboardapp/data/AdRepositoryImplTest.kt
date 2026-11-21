@@ -13,6 +13,7 @@ import com.example.adboardapp.model.AdCondition
 import com.example.adboardapp.model.AdSource
 import com.example.adboardapp.model.AdStatus
 import com.example.adboardapp.model.Author
+import com.example.adboardapp.model.ErrorReason
 import com.example.adboardapp.model.Result
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -63,7 +64,9 @@ class AdRepositoryImplTest {
 
     @Test
     fun getAdByIdReturnsErrorWhenMissing() = runTest {
-        assertTrue(repository.getAdById(404) is Result.Error)
+        val result = repository.getAdById(404)
+
+        assertEquals(ErrorReason.NOT_FOUND, (result as Result.Error).reason)
     }
 
     @Test

@@ -225,7 +225,7 @@ fun AdEditContent(
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text = state.loadError,
+                    text = stringResource(errorReasonRes(state.loadError)),
                     color = MaterialTheme.colorScheme.error,
                     modifier = Modifier.padding(24.dp)
                 )
@@ -359,7 +359,7 @@ fun AdEditContent(
 
                     if (state.saveError != null) {
                         Text(
-                            text = state.saveError,
+                            text = stringResource(errorReasonRes(state.saveError)),
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.error,
                             modifier = Modifier.padding(top = 8.dp)

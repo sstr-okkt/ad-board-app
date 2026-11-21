@@ -59,8 +59,17 @@ data class Ad(
     }
 }
 
-// Result of an operation: data or an error message
+// Kind of a failed operation, translated on the screen
+enum class ErrorReason {
+    SYNC,
+    NOT_FOUND,
+    SAVE,
+    DELETE,
+    STATUS
+}
+
+// Result of an operation: data or a failure reason with an optional technical detail
 sealed class Result<out T> {
     data class Success<out T>(val data: T) : Result<T>()
-    data class Error(val message: String) : Result<Nothing>()
+    data class Error(val reason: ErrorReason, val detail: String? = null) : Result<Nothing>()
 }

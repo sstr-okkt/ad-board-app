@@ -6,6 +6,7 @@ import com.example.adboardapp.domain.DeleteAdUseCase
 import com.example.adboardapp.domain.IncrementViewsUseCase
 import com.example.adboardapp.domain.ObserveAdUseCase
 import com.example.adboardapp.domain.ToggleFavoriteUseCase
+import com.example.adboardapp.model.ErrorReason
 import com.example.adboardapp.model.Result
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -46,7 +47,7 @@ class DetailViewModel(
         viewModelScope.launch {
             when (val result = deleteAd(ad.id)) {
                 is Result.Success -> _uiState.update { it.copy(isDeleted = true) }
-                is Result.Error -> _uiState.update { it.copy(errorMessage = result.message) }
+                is Result.Error -> _uiState.update { it.copy(errorReason = result.reason) }
             }
         }
     }
@@ -69,7 +70,7 @@ class DetailViewModel(
                 _uiState.value = if (ad == null) {
                     DetailUiState(
                         isLoading = false,
-                        errorMessage = "Оголошення не знайдено"
+                        errorReason = ErrorReason.NOT_FOUND
                     )
                 } else {
                     DetailUiState(ad = ad, isLoading = false)
