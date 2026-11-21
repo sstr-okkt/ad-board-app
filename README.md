@@ -17,22 +17,17 @@ because Room is the single source of truth.
 
 <p align="center">
   <img src="docs/screenshots/details.png" width="240" alt="Ad details">
-  <img src="docs/screenshots/photo_viewer.png" width="240" alt="Photo viewer">
   <img src="docs/screenshots/edit_form.png" width="240" alt="Create ad">
+  <img src="docs/screenshots/my_ads.png" width="240" alt="My ads">
 </p>
-<p align="center"><sub>Ad details · Full screen photo · Create ad</sub></p>
+<p align="center"><sub>Ad details · Create ad · My ads</sub></p>
 
 <p align="center">
-  <img src="docs/screenshots/my_ads.png" width="240" alt="My ads">
   <img src="docs/screenshots/favorites.png" width="240" alt="Favorites">
   <img src="docs/screenshots/filters.png" width="240" alt="Filters">
-</p>
-<p align="center"><sub>My ads · Favorites · Filters</sub></p>
-
-<p align="center">
   <img src="docs/screenshots/offline.png" width="240" alt="Offline mode">
 </p>
-<p align="center"><sub>Offline mode</sub></p>
+<p align="center"><sub>Favorites · Filters · Offline mode</sub></p>
 
 ## Features
 
