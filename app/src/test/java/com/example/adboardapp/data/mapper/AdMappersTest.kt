@@ -29,7 +29,8 @@ class AdMappersTest {
             "https://example.com/1.jpg",
             "https://example.com/2.jpg"
         ),
-        meta: MetaDto? = MetaDto("2026-01-01T00:00:00Z")
+        meta: MetaDto? = MetaDto("2026-01-01T00:00:00Z"),
+        reviews: List<ReviewDto> = listOf(ReviewDto("Avery", 4.5))
     ) = ProductDto(
         id = id,
         title = title,
@@ -40,7 +41,7 @@ class AdMappersTest {
         thumbnail = thumbnail,
         images = images,
         meta = meta,
-        reviews = listOf(ReviewDto("Avery", 4.5))
+        reviews = reviews
     )
 
     @Test
@@ -67,6 +68,19 @@ class AdMappersTest {
 
         val published = LocalDate.parse(entity.publishedAt)
         assertTrue(published in LocalDate.now().minusDays(30L)..LocalDate.now())
+    }
+
+    @Test
+    fun ratingAveragesAllReviews() {
+        val reviews = listOf(
+            ReviewDto("Avery", 4.0),
+            ReviewDto("Blake", 5.0),
+            ReviewDto("Casey", 0.0)
+        )
+
+        val entity = dto(reviews = reviews).toEntity()
+
+        assertEquals(4.5, entity.authorRating, 0.01)
     }
 
     @Test

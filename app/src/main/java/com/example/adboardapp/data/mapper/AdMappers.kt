@@ -23,7 +23,6 @@ private val sellerNames = listOf(
 
 // Converts an API product into a Room entity
 fun ProductDto.toEntity(): AdEntity {
-    val reviewer = reviews.firstOrNull()
     val isNew = id % 3 == 0
     val city = adCities[id % adCities.size]
 
@@ -39,7 +38,7 @@ fun ProductDto.toEntity(): AdEntity {
         views = stock * 7 + id * 13,
         status = AdStatus.PUBLISHED.name,
         authorName = sellerNames[id % sellerNames.size],
-        authorRating = reviewer?.rating?.takeIf { it > 0.0 } ?: (4.0 + (id % 10) / 10.0),
+        authorRating = ratingFor(this),
         authorContact = phoneFor(id),
         publishedAt = publishedDate(this),
         source = AdSource.REMOTE.name,
@@ -101,6 +100,15 @@ fun Ad.toEntity(): AdEntity = AdEntity(
     source = source.name,
     isFavorite = isFavorite
 )
+
+// Average of the review ratings, a stable demo value when there are no reviews
+private fun ratingFor(dto: ProductDto): Double =
+    dto.reviews
+        .map { it.rating }
+        .filter { it > 0.0 }
+        .takeIf { it.isNotEmpty() }
+        ?.average()
+        ?: (4.0 + (dto.id % 10) / 10.0)
 
 // Publication date reported by the API, a recent date when it is missing
 private fun publishedDate(dto: ProductDto): String =
