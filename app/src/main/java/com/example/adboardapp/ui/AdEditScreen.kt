@@ -190,9 +190,10 @@ fun AdEditContent(
             TopAppBar(
                 title = {
                     Text(
-                        stringResource(
+                        text = stringResource(
                             if (state.isNew) R.string.new_ad else R.string.edit_ad
-                        )
+                        ),
+                        modifier = Modifier.padding(start = 12.dp)
                     )
                 },
                 navigationIcon = {
