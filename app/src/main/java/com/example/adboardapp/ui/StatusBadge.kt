@@ -9,6 +9,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.adboardapp.R
@@ -31,10 +32,14 @@ internal fun StatusBadge(status: AdStatus) {
     }
 }
 
-internal fun statusColor(status: AdStatus): Color = when (status) {
-    AdStatus.PUBLISHED -> Color(0xFF2E7D32)
-    AdStatus.DRAFT -> Color(0xFF8D6E00)
-    AdStatus.ARCHIVED -> Color(0xFF616161)
+@Composable
+internal fun statusColor(status: AdStatus): Color {
+    val isDark = MaterialTheme.colorScheme.background.luminance() < 0.5f
+    return when (status) {
+        AdStatus.PUBLISHED -> if (isDark) Color(0xFF81C784) else Color(0xFF2E7D32)
+        AdStatus.DRAFT -> if (isDark) Color(0xFFFFD54F) else Color(0xFF8D6E00)
+        AdStatus.ARCHIVED -> if (isDark) Color(0xFFBDBDBD) else Color(0xFF616161)
+    }
 }
 
 @StringRes
