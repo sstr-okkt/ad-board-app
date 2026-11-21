@@ -19,4 +19,13 @@ class PhoneFormatTest {
     fun keepsEmptyValue() {
         assertEquals("", formatPhoneNumber(""))
     }
+
+    @Test
+    fun formatsPartlyTypedNumbers() {
+        assertEquals("+380 67 11", formatPhoneNumber("6711"))
+        assertEquals("+380 67 111", formatPhoneNumber("67111"))
+        assertEquals("+380 67 111 2", formatPhoneNumber("671112"))
+        assertEquals("+380 67 111 22", formatPhoneNumber("6711122"))
+        assertEquals("+380 67 111 22 3", formatPhoneNumber("67111223"))
+    }
 }

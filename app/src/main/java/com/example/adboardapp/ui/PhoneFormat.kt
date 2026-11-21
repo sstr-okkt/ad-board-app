@@ -16,8 +16,8 @@ internal fun formatPhoneNumber(raw: String): String {
     return buildString {
         append("+380")
         if (local.isNotEmpty()) append(' ').append(local.take(2))
-        if (local.length > 2) append(' ').append(local.substring(2, 5))
-        if (local.length > 5) append(' ').append(local.substring(5, 7))
-        if (local.length > 7) append(' ').append(local.substring(7, 9))
+        if (local.length > 2) append(' ').append(local.substring(2, minOf(5, local.length)))
+        if (local.length > 5) append(' ').append(local.substring(5, minOf(7, local.length)))
+        if (local.length > 7) append(' ').append(local.substring(7, minOf(9, local.length)))
     }
 }
