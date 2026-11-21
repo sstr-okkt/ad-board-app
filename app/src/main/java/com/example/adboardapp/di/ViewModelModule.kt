@@ -2,6 +2,7 @@ package com.example.adboardapp.di
 
 import com.example.adboardapp.ui.AdEditViewModel
 import com.example.adboardapp.ui.DetailViewModel
+import com.example.adboardapp.ui.ExchangeRateViewModel
 import com.example.adboardapp.ui.FavoritesViewModel
 import com.example.adboardapp.ui.ListViewModel
 import com.example.adboardapp.ui.MyAdsViewModel
@@ -19,4 +20,5 @@ val viewModelModule = module {
     viewModel { FavoritesViewModel(get(), get()) }
     viewModel { ThemeViewModel(get()) }
     viewModel { LanguageViewModel(get()) }
+    viewModel { ExchangeRateViewModel(get()) }
 }

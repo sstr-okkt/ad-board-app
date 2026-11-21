@@ -137,6 +137,13 @@
     <string name="theme_light_desc">Light gray colors</string>
     <string name="theme_dark_desc">Dark colors</string>
 
+    <!-- Exchange rate -->
+    <string name="rate_section">Exchange rate</string>
+    <string name="rate_nbu">NBU rate</string>
+    <string name="rate_value">1 $ = %1$s ₴</string>
+    <string name="rate_updated">Updated %1$s</string>
+    <string name="rate_empty">Rate not loaded yet</string>
+
     <!-- Bottom navigation -->
     <string name="nav_search">Search</string>
     <string name="nav_my">My ads</string>

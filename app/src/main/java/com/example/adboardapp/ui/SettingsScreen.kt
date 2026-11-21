@@ -25,32 +25,39 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.adboardapp.R
+import com.example.adboardapp.data.rate.CurrencyRate
 import com.example.adboardapp.model.AppLanguage
 import com.example.adboardapp.model.ThemeMode
 import com.example.adboardapp.ui.theme.AdBoardAppTheme
+import java.text.NumberFormat
 import org.koin.androidx.compose.koinViewModel
 
-// App settings: language and theme
+// App settings: language, theme and the exchange rate
 @Composable
 fun SettingsScreen(
     themeViewModel: ThemeViewModel = koinViewModel(),
-    languageViewModel: LanguageViewModel = koinViewModel()
+    languageViewModel: LanguageViewModel = koinViewModel(),
+    rateViewModel: ExchangeRateViewModel = koinViewModel()
 ) {
     val themeMode by themeViewModel.mode.collectAsStateWithLifecycle()
     val language by languageViewModel.language.collectAsStateWithLifecycle()
+    val rate by rateViewModel.rate.collectAsStateWithLifecycle()
 
     SettingsContent(
         themeMode = themeMode,
         onThemeChange = themeViewModel::setMode,
         language = language,
-        onLanguageChange = languageViewModel::setLanguage
+        onLanguageChange = languageViewModel::setLanguage,
+        rate = rate
     )
 }
 
@@ -62,6 +69,7 @@ fun SettingsContent(
     onThemeChange: (ThemeMode) -> Unit,
     language: AppLanguage,
     onLanguageChange: (AppLanguage) -> Unit,
+    rate: CurrencyRate?,
     modifier: Modifier = Modifier
 ) {
     Scaffold(
@@ -134,8 +142,62 @@ fun SettingsContent(
                         }
                     }
                 }
+
+                Spacer(Modifier.height(20.dp))
+
+                SectionTitle(stringResource(R.string.rate_section))
+
+                Surface(
+                    shape = RoundedCornerShape(16.dp),
+                    color = MaterialTheme.colorScheme.surface,
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Column(modifier = Modifier.padding(16.dp)) {
+                        Text(
+                            text = stringResource(R.string.rate_nbu),
+                            style = MaterialTheme.typography.bodyLarge
+                        )
+                        Spacer(Modifier.height(4.dp))
+                        if (rate == null) {
+                            Text(
+                                text = stringResource(R.string.rate_empty),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        } else {
+                            Text(
+                                text = stringResource(
+                                    R.string.rate_value,
+                                    formatRate(rate.usdToUah)
+                                ),
+                                style = MaterialTheme.typography.titleMedium
+                            )
+                            if (rate.date != null) {
+                                Spacer(Modifier.height(4.dp))
+                                Text(
+                                    text = stringResource(R.string.rate_updated, rate.date),
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
+                        }
+                    }
+                }
             }
         }
+    }
+}
+
+// 41.523 -> "41,52" in the current locale
+@Composable
+private fun formatRate(value: Double): String {
+    val locale = LocalConfiguration.current.locales[0]
+    return remember(value, locale) {
+        NumberFormat.getNumberInstance(locale).apply {
+            minimumFractionDigits = 2
+            maximumFractionDigits = 2
+        }.format(value)
     }
 }
 
@@ -209,7 +271,8 @@ private fun SettingsContentPreview() {
             themeMode = ThemeMode.SYSTEM,
             onThemeChange = {},
             language = AppLanguage.UKRAINIAN,
-            onLanguageChange = {}
+            onLanguageChange = {},
+            rate = null
         )
     }
 }

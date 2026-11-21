@@ -21,8 +21,8 @@ private val sellerNames = listOf(
     "Дмитро Ткачук", "Олена Гриценко", "Сергій Мороз", "Юлія Савченко"
 )
 
-// Converts an API product into a Room entity
-fun ProductDto.toEntity(): AdEntity {
+// Converts an API product into a Room entity, prices are converted with the NBU rate
+fun ProductDto.toEntity(usdToUah: Double): AdEntity {
     val isNew = id % 3 == 0
     val city = adCities[id % adCities.size]
 
@@ -30,7 +30,7 @@ fun ProductDto.toEntity(): AdEntity {
         id = id,
         title = title,
         description = descriptionFor(this, isNew, city),
-        price = (price * 41).roundToInt().toDouble(), // rough USD to UAH for the demo
+        price = (price * usdToUah).roundToInt().toDouble(),
         isNegotiable = id % 4 == 0,
         category = categoryKeyFromApi(category),
         city = city,

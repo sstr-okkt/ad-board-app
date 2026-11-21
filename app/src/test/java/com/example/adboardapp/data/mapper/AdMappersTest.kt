@@ -46,7 +46,7 @@ class AdMappersTest {
 
     @Test
     fun productIsConvertedToEntity() {
-        val entity = dto().toEntity()
+        val entity = dto().toEntity(41.0)
 
         assertEquals(1, entity.id)
         assertEquals("Phone", entity.title)
@@ -64,7 +64,7 @@ class AdMappersTest {
 
     @Test
     fun missingCreationDateFallsBackToARecentDate() {
-        val entity = dto(id = 1, meta = null).toEntity()
+        val entity = dto(id = 1, meta = null).toEntity(41.0)
 
         val published = LocalDate.parse(entity.publishedAt)
         assertTrue(published in LocalDate.now().minusDays(30L)..LocalDate.now())
@@ -78,14 +78,14 @@ class AdMappersTest {
             ReviewDto("Casey", 0.0)
         )
 
-        val entity = dto(reviews = reviews).toEntity()
+        val entity = dto(reviews = reviews).toEntity(41.0)
 
         assertEquals(4.5, entity.authorRating, 0.01)
     }
 
     @Test
     fun descriptionUsesTheLocalizedCityName() {
-        val entity = dto(id = 1).toEntity()
+        val entity = dto(id = 1).toEntity(41.0)
 
         assertEquals("odesa", entity.city)
         assertTrue(entity.description.contains("Одеса"))
@@ -93,9 +93,16 @@ class AdMappersTest {
     }
 
     @Test
+    fun priceUsesTheGivenRate() {
+        val entity = dto(price = 100.0).toEntity(41.5)
+
+        assertEquals(4150.0, entity.price, 0.01)
+    }
+
+    @Test
     fun newConditionIsUsedForEveryThirdAd() {
-        assertEquals(AdCondition.NEW.name, dto(id = 3).toEntity().condition)
-        assertEquals(AdCondition.USED.name, dto(id = 1).toEntity().condition)
+        assertEquals(AdCondition.NEW.name, dto(id = 3).toEntity(41.0).condition)
+        assertEquals(AdCondition.USED.name, dto(id = 1).toEntity(41.0).condition)
     }
 
     @Test
@@ -117,7 +124,7 @@ class AdMappersTest {
 
     @Test
     fun roomRowIsConvertedToDomain() {
-        val entity = dto(id = 2).toEntity()
+        val entity = dto(id = 2).toEntity(41.0)
         val row = AdWithImages(
             ad = entity,
             images = listOf(

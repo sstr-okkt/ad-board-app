@@ -1,5 +1,7 @@
 package com.example.adboardapp.di
 
+import com.example.adboardapp.data.rate.CurrencyRateStore
+import com.example.adboardapp.data.rate.PreferencesCurrencyRateStore
 import com.example.adboardapp.data.settings.LanguageManager
 import com.example.adboardapp.data.settings.ThemeManager
 import org.koin.android.ext.koin.androidContext
@@ -9,4 +11,5 @@ import org.koin.dsl.module
 val settingsModule = module {
     single { ThemeManager(androidContext()) }
     single { LanguageManager(androidContext()) }
+    single<CurrencyRateStore> { PreferencesCurrencyRateStore(androidContext()) }
 }

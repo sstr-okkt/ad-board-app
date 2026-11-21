@@ -5,6 +5,9 @@ import com.example.adboardapp.data.local.AdImageEntity
 import com.example.adboardapp.data.mapper.toDomain
 import com.example.adboardapp.data.mapper.toEntity
 import com.example.adboardapp.data.mapper.toImageEntities
+import com.example.adboardapp.data.rate.CurrencyRate
+import com.example.adboardapp.data.rate.CurrencyRateStore
+import com.example.adboardapp.data.remote.ExchangeRateApi
 import com.example.adboardapp.data.remote.ProductsApi
 import com.example.adboardapp.domain.AdRepository
 import com.example.adboardapp.model.Ad
@@ -19,7 +22,9 @@ import java.time.LocalDate
 // Offline-first repository: Room is the source of truth, the network only refreshes it
 class AdRepositoryImpl(
     private val api: ProductsApi,
-    private val dao: AdDao
+    private val dao: AdDao,
+    private val rateApi: ExchangeRateApi,
+    private val rateStore: CurrencyRateStore
 ) : AdRepository {
 
     override fun observeAds(): Flow<List<Ad>> =
@@ -29,11 +34,12 @@ class AdRepositoryImpl(
         dao.observeById(id).map { row -> row?.toDomain() }
 
     override suspend fun refresh(): Result<Unit> = try {
+        val usdToUah = usdToUah()
         val products = api.getProducts().products
         // Keep the old cache if the response is empty
         if (products.isNotEmpty()) {
             dao.replaceRemote(
-                ads = products.map { it.toEntity() },
+                ads = products.map { it.toEntity(usdToUah) },
                 images = products.flatMap { it.toImageEntities() }
             )
         }
@@ -41,6 +47,19 @@ class AdRepositoryImpl(
     } catch (e: Exception) {
         // User ads stay in the database, only the network part is refreshed
         Result.Error(ErrorReason.SYNC, e.message)
+    }
+
+    // Official NBU rate, the last saved one, or a stable demo value
+    private suspend fun usdToUah(): Double {
+        val fresh = runCatching { rateApi.getUsdRate(NBU_RATE_URL).firstOrNull() }
+            .getOrNull()
+
+        if (fresh != null && fresh.rate > 0.0) {
+            rateStore.save(CurrencyRate(fresh.rate, fresh.exchangedate))
+            return fresh.rate
+        }
+
+        return rateStore.rate.value?.usdToUah ?: DEFAULT_USD_TO_UAH
     }
 
     override suspend fun getAdById(id: Int): Result<Ad> =
@@ -103,5 +122,11 @@ class AdRepositoryImpl(
         Result.Success(Unit)
     } catch (e: Exception) {
         Result.Error(ErrorReason.STATUS, e.message)
+    }
+
+    private companion object {
+        const val NBU_RATE_URL =
+            "https://bank.gov.ua/NBUStatService/v1/statdirectory/exchange?valcode=USD&json"
+        const val DEFAULT_USD_TO_UAH = 41.0
     }
 }

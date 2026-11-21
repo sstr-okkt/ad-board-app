@@ -5,6 +5,10 @@ import com.example.adboardapp.data.local.AdEntity
 import com.example.adboardapp.data.local.AdImageEntity
 import com.example.adboardapp.data.local.AdStateRow
 import com.example.adboardapp.data.local.AdWithImages
+import com.example.adboardapp.data.rate.CurrencyRate
+import com.example.adboardapp.data.rate.CurrencyRateStore
+import com.example.adboardapp.data.remote.ExchangeRateApi
+import com.example.adboardapp.data.remote.NbuRateDto
 import com.example.adboardapp.data.remote.ProductDto
 import com.example.adboardapp.data.remote.ProductsApi
 import com.example.adboardapp.data.remote.ProductsResponse
@@ -17,6 +21,7 @@ import com.example.adboardapp.model.ErrorReason
 import com.example.adboardapp.model.Result
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
@@ -27,7 +32,14 @@ class AdRepositoryImplTest {
 
     private val dao = FakeAdDao()
     private val api = FakeProductsApi()
-    private val repository = AdRepositoryImpl(api = api, dao = dao)
+    private val rateApi = FakeRateApi()
+    private val rateStore = FakeRateStore()
+    private val repository = AdRepositoryImpl(
+        api = api,
+        dao = dao,
+        rateApi = rateApi,
+        rateStore = rateStore
+    )
 
     @Test
     fun refreshStoresRemoteAds() = runTest {
@@ -39,6 +51,39 @@ class AdRepositoryImplTest {
         assertEquals(2, dao.rows.size)
         assertEquals(AdSource.REMOTE.name, dao.rows.getValue(1).source)
         assertEquals(2, dao.images[1]?.size)
+    }
+
+    @Test
+    fun refreshConvertsPricesWithTheNbuRate() = runTest {
+        api.products = listOf(product(1))
+        rateApi.rate = 41.5
+
+        repository.refresh()
+
+        assertEquals(415.0, dao.rows.getValue(1).price, 0.01)
+        assertEquals(41.5, rateStore.rate.value?.usdToUah)
+        assertEquals("21.11.2026", rateStore.rate.value?.date)
+    }
+
+    @Test
+    fun refreshUsesTheStoredRateWhenTheRateApiFails() = runTest {
+        api.products = listOf(product(1))
+        rateStore.save(CurrencyRate(42.0, "01.01.2026"))
+        rateApi.failure = Exception("offline")
+
+        repository.refresh()
+
+        assertEquals(420.0, dao.rows.getValue(1).price, 0.01)
+    }
+
+    @Test
+    fun refreshUsesTheDefaultRateWithoutAnyRate() = runTest {
+        api.products = listOf(product(1))
+        rateApi.failure = Exception("offline")
+
+        repository.refresh()
+
+        assertEquals(410.0, dao.rows.getValue(1).price, 0.01)
     }
 
     @Test
@@ -154,6 +199,26 @@ class AdRepositoryImplTest {
         publishedAt = publishedAt,
         source = AdSource.LOCAL
     )
+
+    private class FakeRateApi : ExchangeRateApi {
+        var rate: Double? = null
+        var failure: Exception? = null
+
+        override suspend fun getUsdRate(url: String): List<NbuRateDto> {
+            failure?.let { throw it }
+            val value = rate ?: return emptyList()
+            return listOf(NbuRateDto(rate = value, exchangedate = "21.11.2026"))
+        }
+    }
+
+    private class FakeRateStore : CurrencyRateStore {
+        private val _rate = MutableStateFlow<CurrencyRate?>(null)
+        override val rate: StateFlow<CurrencyRate?> = _rate
+
+        override fun save(rate: CurrencyRate) {
+            _rate.value = rate
+        }
+    }
 
     private class FakeProductsApi : ProductsApi {
         var products: List<ProductDto> = emptyList()

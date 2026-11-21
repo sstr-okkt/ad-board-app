@@ -137,6 +137,13 @@
     <string name="theme_light_desc">Світло-сірі кольори</string>
     <string name="theme_dark_desc">Темні кольори</string>
 
+    <!-- Exchange rate -->
+    <string name="rate_section">Курс валют</string>
+    <string name="rate_nbu">Курс НБУ</string>
+    <string name="rate_value">1 $ = %1$s ₴</string>
+    <string name="rate_updated">Оновлено %1$s</string>
+    <string name="rate_empty">Курс ще не завантажено</string>
+
     <!-- Bottom navigation -->
     <string name="nav_search">Пошук</string>
     <string name="nav_my">Мої</string>

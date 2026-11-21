@@ -6,5 +6,5 @@ import org.koin.dsl.module
 
 // Binds the repository interface to its implementation
 val repositoryModule = module {
-    single<AdRepository> { AdRepositoryImpl(get(), get()) }
+    single<AdRepository> { AdRepositoryImpl(get(), get(), get(), get()) }
 }
